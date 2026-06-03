@@ -1,0 +1,16 @@
+---
+description: Protocole de session
+alwaysApply: true
+---
+
+Lis `AGENTS.md` en premier et suis son protocole exactement.
+`AGENTS.md` est le seul orchestrateur du projet — il définit le protocole de session, les règles de décision, les skills disponibles et les gardes-fous.
+
+**Quelle que soit la première demande de l'humain, exécuter `skills/session-start.md` avant de répondre ou d'agir — sans exception. Ne relancer `session-start.md` qu'une seule fois par session.**
+
+Lis ensuite dans cet ordre :
+1. `system/governance.md`
+2. `system/access-control.md`
+3. `system/memory.md`
+
+Ne jamais prendre de décision produit, architecture ou gouvernance sans validation humaine.

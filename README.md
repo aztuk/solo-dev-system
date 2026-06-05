@@ -1,110 +1,116 @@
 # Agent System Template
 
-Un système d'orchestration IA pour projets solo ou en petite équipe. Il structure la collaboration entre un humain et plusieurs agents IA (Claude Code, Codex, Cursor) autour d'un protocole partagé, d'un design system synchronisé depuis Figma, et d'un contrôle strict des décisions.
+An AI orchestration system for solo developers or small teams. It structures collaboration between a human and multiple AI agents (Claude Code, Codex, Cursor) around a shared protocol, a Figma-synced design system, and strict decision control.
 
 ---
 
-## Comment ça fonctionne
+## How it works
 
 ```
-Niveau 0 : Humain
-Niveau 1 : AGENTS.md  ←  orchestrateur unique, lu par tous les agents
-Niveau 2 : Skills     ←  actions atomiques déclenchées par AGENTS.md
+Level 0 : Human
+Level 1 : AGENTS.md  <-  single orchestrator, read by all agents
+Level 2 : Skills     <-  atomic actions triggered by AGENTS.md
 ```
 
-**`AGENTS.md`** est le seul fichier que tous les agents lisent en premier. Il définit le protocole de session, les règles de décision, les skills disponibles et les gardes-fous. Chaque outil IA (Claude Code, Cursor, Codex) dispose d'un adapter minimal qui pointe vers lui.
+**`AGENTS.md`** is the only file every agent reads first. It defines the session protocol, decision rules, available skills, and guardrails. Each AI tool (Claude Code, Cursor, Codex) has a minimal adapter that points to it.
 
-**Les skills** (`skills/`) sont des actions atomiques : démarrer une session, auditer un composant, synchroniser Figma, committer. Un skill ne délègue jamais à un autre skill — toute orchestration remonte dans `AGENTS.md`.
+**Skills** (`skills/`) are atomic actions: starting a session, auditing a component, syncing Figma, committing. A skill never delegates to another skill — all orchestration flows back through `AGENTS.md`.
 
-**Les fichiers système** (`system/`) stockent les décisions durables : gouvernance, tokens, mémoire des trade-offs, contrôle d'accès. Aucun agent ne les modifie librement — chaque fichier a un éditeur autorisé défini dans `system/access-control.md`.
+**System files** (`system/`) store durable decisions: governance, tokens, trade-off memory, access control. No agent modifies them freely — each file has an authorized editor defined in `system/access-control.md`.
 
 ---
 
-## Utilisation après fork
+## Setup after fork
 
-### 1. Configurer le projet
+### 1. Configure the project
 
-Renseigner la stack et les conventions dans `system/governance.md` :
-- Section **Stack technique** : technologies choisies
-- Section **Conventions de nommage** : adapter si nécessaire
-- Section **Scope** : ce qui est inclus et exclu du projet
+Fill in the stack and conventions in `system/governance.md`:
+- **Tech stack** section: chosen technologies
+- **Naming conventions** section: adjust as needed
+- **Scope** section: what is in and out of scope
 
-### 2. Créer un dossier de specs
+### 2. Create a specs folder
 
-Créer un dossier pour les spécifications des features (ex: `specs/`). Pour chaque feature, un fichier Markdown décrivant le comportement attendu, les règles métier et les états UI.
+Create a folder for feature specifications (e.g. `specs/`). For each feature, a Markdown file describing expected behavior, business rules, and UI states.
 
-Mettre à jour la référence dans `system/governance.md` → section **Fichiers de référence** → ligne *Specs features*.
+Update the reference in `system/governance.md` → **Reference files** section → *Feature specs* line.
 
-Mettre à jour `AGENTS.md` → Phase 3a → remplacer *"dossier de specs défini dans `system/governance.md`"* par le chemin réel.
+Update `AGENTS.md` → Phase 3a → replace *"specs folder defined in `system/governance.md`"* with the actual path.
 
-### 3. Connecter Figma (optionnel)
+### 3. Connect Figma (optional)
 
-Si le projet a un fichier Figma :
-- Renseigner l'URL du fichier dans `system/governance.md`
-- Exécuter `skills/figma-sync.md` pour peupler `system/tokens.md` et `design-system/`
+If the project has a Figma file:
+- Add the file URL in `system/governance.md`
+- Run `skills/figma-sync.md` to populate `system/tokens.md` and `design-system/`
 
-Si pas de Figma, renseigner manuellement les tokens dans `system/tokens.md` et désactiver les références à `figma-sync.md` dans `AGENTS.md`.
+If no Figma, manually fill in tokens in `system/tokens.md` and disable references to `figma-sync.md` in `AGENTS.md`.
 
-### 4. Créer les premières tâches
+### 4. Create the first tasks
 
-Écrire librement dans `TODO.md` — une idée par ligne, sans format imposé :
+Write freely in `TODO.md` — one idea per line, no required format:
 
 ```
-Créer la page d'accueil
-Setup authentification
-Définir le modèle de données utilisateur
+Create homepage
+Setup authentication
+Define user data model
 ```
 
-À la prochaine session, l'agent lit `TODO.md`, classe chaque entrée (catégorie, priorité, difficulté) et l'ajoute dans `roadmap.md`. `TODO.md` est ensuite vidé.
+At the next session, the agent reads `TODO.md`, classifies each entry (category, priority, difficulty) and adds it to `roadmap.md`. `TODO.md` is then cleared.
 
-### 5. Démarrer une session
+### 5. Start a session
 
-Ouvrir une conversation avec Claude Code (ou Cursor, Codex). L'agent exécute automatiquement `skills/session-start.md` qui :
-1. Synchronise `TODO.md` → `roadmap.md`
-2. Propose la tâche la plus prioritaire
-3. Attend la validation avant d'agir
+Open a conversation with Claude Code (or Cursor, Codex). The agent automatically runs `skills/session-start.md`, which:
+1. Syncs `TODO.md` → `roadmap.md`
+2. Proposes the highest-priority task
+3. Waits for validation before acting
 
 ---
 
-## Structure des fichiers
+## File structure
 
 ```
-AGENTS.md                        ← protocole unique, lu par tous les agents
-CLAUDE.md                        ← adapter Claude Code
-.cursor/rules/protocol.mdc       ← adapter Cursor
-TODO.md                          ← dump libre de tâches (humain → agents)
-roadmap.md                       ← backlog structuré (géré par les agents)
-later.md                         ← décisions temporaires à revoir plus tard
+AGENTS.md                        <- single protocol, read by all agents
+CLAUDE.md                        <- Claude Code adapter
+.cursor/rules/protocol.mdc       <- Cursor adapter
+TODO.md                          <- free-form task dump (human -> agents)
+roadmap.md                       <- structured backlog (managed by agents)
+later.md                         <- temporary decisions to revisit later
 
 system/
-  governance.md                  ← stack, conventions, règles non-négociables
-  tokens.md                      ← design tokens (sync depuis Figma)
-  memory.md                      ← journal des décisions et trade-offs
-  access-control.md              ← qui peut écrire quoi et par quel chemin
+  governance.md                  <- stack, conventions, non-negotiable rules
+  tokens.md                      <- design tokens (synced from Figma)
+  memory.md                      <- decision and trade-off log
+  access-control.md              <- who can write what and through which path
+  session-state-claude.md        <- live session state (injected via hook)
 
 design-system/
-  component-catalog.md           ← index des composants
-  flows-catalog.md               ← index des flows/parcours
-  components/                    ← documentation de chaque composant
-  flows/                         ← documentation de chaque flow
+  component-catalog.md           <- component index
+  flows-catalog.md               <- flow/journey index
+  components/                    <- per-component documentation
+  flows/                         <- per-flow documentation
 
 skills/
-  session-start.md               ← démarrage de session (sync TODO + proposition tâche)
-  design-audit.md                ← audit composant + token avant implémentation
-  scaffold-feature.md            ← création des stubs de fichiers d'une feature
-  compliance.md                  ← audit post-implémentation avant commit
-  figma-sync.md                  ← synchronisation Figma → tokens.md + design-system/
-  commit-protocol.md             ← vérification + commit + clôture session
-  update-system.md               ← mise à jour des fichiers système après décision humaine
-  create-skill.md                ← création d'un nouveau skill
+  session-start.md               <- session startup (TODO sync + task proposal)
+  product-challenge.md           <- product thinking phase (M+ tasks)
+  design-audit.md                <- component + token audit before implementation
+  scaffold-feature.md            <- feature file stub creation
+  unit-tests.md                  <- unit test generation after implementation
+  compliance.md                  <- post-implementation audit before commit
+  figma-sync.md                  <- Figma -> tokens.md + design-system/ sync
+  commit-protocol.md             <- verification + commit + session close
+  update-system.md               <- system file update after human decision
+  create-skill.md                <- new skill creation
+
+scripts/
+  migrate-to-project.ps1         <- apply system updates to existing projects
 ```
 
 ---
 
-## Règles fondamentales
+## Core rules
 
-- **Jamais de décision seul** : toute décision produit, architecture ou gouvernance est proposée à l'humain avec une recommandation. L'agent attend la validation.
-- **Jamais de valeur hardcodée** : toute valeur visuelle vient de `system/tokens.md`.
-- **Jamais de commit sans compliance** : le commit ne se fait qu'après validation humaine explicite du rapport compliance.
-- **Figma est la source de vérité** : les specs sont un point de départ, pas une référence finale.
-- **Pas d'imbrication** : les skills ne s'appellent jamais entre eux.
+- **Never decide alone**: any product, architecture, or governance decision is proposed to the human with a recommendation. The agent waits for validation.
+- **Never hardcode values**: all visual values come from `system/tokens.md`.
+- **Never commit without compliance**: commit only happens after explicit human validation of the compliance report.
+- **Figma is the source of truth**: specs are a starting point, not the final reference.
+- **No nesting**: skills never call each other.

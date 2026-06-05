@@ -93,3 +93,33 @@ Si non, indique quelle tâche tu préfères traiter.
 ```
 
 **Attendre la validation explicite de l'humain avant de continuer vers la Phase 2 de AGENTS.md.**
+
+---
+
+### Étape 6 — Initialiser system/session-state-claude.md
+
+Une fois la tâche validée par l'humain, écrire dans `system/session-state-claude.md` :
+
+```
+# Session state — Claude Code
+
+> Injected automatically before each message via UserPromptSubmit hook.
+> Updated by Claude Code at each phase transition.
+> Do not edit manually.
+
+---
+
+**Phase**    : 1 — Start
+**Task**     : [validated task description]
+**Category** : [category]
+**Priority** : [P1/P2/P3]
+
+**Active constraints** :
+- Never decide alone (product, architecture, governance)
+- Always check access-control.md before writing system files
+- Never commit without validated compliance
+
+**Pending decisions** : None
+```
+
+Ce fichier est mis à jour à chaque transition de phase dans AGENTS.md.

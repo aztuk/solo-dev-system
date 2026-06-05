@@ -56,6 +56,14 @@ Pour les tâches touchant la base de données (passer si aucun fichier data modi
 - Les accès BDD passent par la couche service et non directement depuis les composants ?
 - Les règles d'accès sont-elles définies pour les nouvelles tables ?
 
+#### Audit 6 — Tests unitaires
+
+Vérifier que les tests ont bien été écrits et exécutés via `skills/unit-tests.md` avant d'arriver ici.
+- Un fichier de test existe pour chaque fichier source créé ou modifié ?
+- Les trois catégories sont couvertes : comportement nominal, comportement agent, edge cases ?
+- Tous les tests passent (aucun échec, aucun test ignoré sans justification) ?
+- Si des cas n'ont pas pu être testés : la raison est documentée dans le rapport `unit-tests` et validée par l'humain ?
+
 ---
 
 ### Étape 3 — Afficher le rapport dans le chat
@@ -70,6 +78,7 @@ Audit 2 — Tokens       : PASSÉ / [écarts]
 Audit 3 — Gouvernance  : PASSÉ / [écarts]
 Audit 4 — Composants   : PASSÉ / [écarts]
 Audit 5 — Data         : PASSÉ / N/A / [écarts]
+Audit 6 — Tests        : PASSÉ / [écarts]
 
 Résultat : PRÊT POUR COMMIT / BLOQUÉ ([n] écart(s))
 ```

@@ -40,9 +40,11 @@ Au démarrage de chaque session, lire dans cet ordre :
 | Skill | Déclencheur |
 |---|---|
 | `skills/session-start.md` | Début de chaque session |
+| `skills/product-challenge.md` | Après classification, pour toute tâche M+ (Dev, Design, Produit) |
 | `skills/design-audit.md` | Avant toute création ou modification de composant ou valeur visuelle |
 | `skills/scaffold-feature.md` | Lancement d'une nouvelle feature Dev validée |
-| `skills/compliance.md` | Après chaque implémentation, avant commit |
+| `skills/unit-tests.md` | Après chaque implémentation (Phase 5), avant compliance |
+| `skills/compliance.md` | Après chaque implémentation et tests unitaires validés, avant commit |
 | `skills/figma-sync.md` | Après mise à jour de la page Tokens ou composants dans Figma |
 | `skills/commit-protocol.md` | Après validation humaine du compliance |
 | `skills/update-system.md` | Après chaque décision humaine à impact long terme |
@@ -119,19 +121,36 @@ Ce skill :
 
 Une fois la tâche validée, marquer son statut `[ en cours ]` et son agent dans `roadmap.md`.
 
+Mettre à jour `system/session-state-claude.md` : Phase → 2, catégorie et contraintes actives selon le type de tâche.
+
 Router selon la catégorie de la tâche :
 
 | Catégorie | Protocole |
 |---|---|
-| `Dev` | Phases 3 → 4 → 5 → 6 → 7 |
-| `Design` | Ouvrir Figma. Si tokens ou composants mis à jour : exécuter `figma-sync.md`. Pas de phase 3-5. |
-| `Infra` | Phase 3 (si M+) → implémentation directe → Phase 6 → 7 |
-| `Data` | Phase 3 (si M+) → modification schéma → Phase 6 → 7 |
-| `Produit` | Présenter les options à l'humain. Décision humaine → exécuter `update-system.md`. Pas de code. |
+| `Dev` | Phase 2b (si M+) → Phases 3 → 4 → 5 → unit-tests → 6 → 7 |
+| `Design` | Phase 2b (si M+) → Figma. Si tokens ou composants mis à jour : exécuter `figma-sync.md`. Pas de phase 3-5. |
+| `Infra` | Phase 2b (si M+) → Phase 3 → implémentation directe → Phase 6 → 7 |
+| `Data` | Phase 2b (si M+) → Phase 3 → modification schéma → Phase 6 → 7 |
+| `Produit` | Phase 2b (si M+) → Présenter les options à l'humain. Décision humaine → exécuter `update-system.md`. Pas de code. |
+
+---
+
+### PHASE 2b — Product challenge (M+ uniquement)
+
+Exécuter `skills/product-challenge.md`.
+
+Ce skill :
+1. Analyse la tâche et identifie hypothèses implicites, edge cases et décisions de design ouvertes
+2. Poste toutes les questions en un seul message — attend la réponse humaine
+3. Écrit les conclusions dans `system/session-state-claude.md` avant de continuer
+
+**L'agent ne passe pas en Phase 3 tant que l'humain n'a pas répondu au challenge.**
 
 ---
 
 ### PHASE 3 — Planification (selon difficulté)
+
+Mettre à jour `system/session-state-claude.md` : Phase → 3.
 
 #### Étape 3a — Vérification delta Figma ↔ Specs
 
@@ -196,6 +215,8 @@ Pour construire le plan, consulter :
 
 ### PHASE 4 — Audit design (tâches Dev uniquement)
 
+Mettre à jour `system/session-state-claude.md` : Phase → 4.
+
 Avant d'implémenter, exécuter `skills/design-audit.md`.
 
 Ce skill détermine :
@@ -209,6 +230,8 @@ Ce skill détermine :
 
 ### PHASE 5 — Implémentation
 
+Mettre à jour `system/session-state-claude.md` : Phase → 5. Si des décisions sont en attente de validation humaine, les noter dans le champ **Décisions en attente**.
+
 Implémenter selon le plan validé (ou directement si XS/S).
 
 Règles pendant l'implémentation :
@@ -218,9 +241,15 @@ Règles pendant l'implémentation :
 - Si une décision d'implémentation locale est prise (sans impact sur les fichiers système), la noter en commentaire court dans le code
 - Si une décision à impact long terme émerge : stopper, proposer à l'humain, attendre validation, puis exécuter `update-system.md`
 
+Une fois l'implémentation terminée, exécuter `skills/unit-tests.md`.
+
+**L'agent ne passe pas en Phase 6 tant que tous les tests unitaires ne sont pas au vert.**
+
 ---
 
 ### PHASE 6 — Compliance
+
+Mettre à jour `system/session-state-claude.md` : Phase → 6.
 
 Exécuter `skills/compliance.md`.
 
@@ -244,7 +273,8 @@ Une fois le compliance validé et les tests manuels effectués par l'humain :
 1. Exécuter `skills/commit-protocol.md`
 2. Mettre à jour `roadmap.md` : statut → `[ fait ]`, agent → nom de l'agent
 3. Mettre à jour `system/memory.md` si des décisions ou trade-offs significatifs ont été faits pendant la session
-4. Signaler à l'humain que la session est terminée et que la tâche est clôturée
+4. Réinitialiser `system/session-state-claude.md` à l'état par défaut (aucune session active)
+5. Signaler à l'humain que la session est terminée et que la tâche est clôturée
 
 ---
 

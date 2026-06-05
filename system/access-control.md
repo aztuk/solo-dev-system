@@ -65,6 +65,7 @@ Toute modification de ce fichier passe par le skill `update-system.md`.
 | Fichier | Lecture | Écriture autorisée | Point d'entrée |
 |---|---|---|---|
 | `skills/*.md` | Tout agent | `update-system.md` ou `create-skill.md` | Décision humaine validée |
+| `system/session-state-claude.md` | Tout agent | Claude Code en session | Transition de phase ou fin de product-challenge |
 
 ---
 

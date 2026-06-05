@@ -23,21 +23,26 @@ Adapter la structure ci-dessous à la stack du projet (définie dans `system/gov
 ```
 [dossier écrans]/
   (feature-name)/
-    index.[ext]       ← écran principal
-    [id].[ext]        ← écran détail si applicable
+    index.[ext]               ← écran principal
+    [id].[ext]                ← écran détail si applicable
 
 [dossier composants]/
   (feature-name)/
     NomComposant.[ext]
+    NomComposant.test.[ext]   ← fichier de test co-localisé
 
 [dossier hooks]/
   useNomFeature.[ext]
+  useNomFeature.test.[ext]
 
 [dossier services]/
-  (feature-name).[ext]  ← accès API / BDD
+  (feature-name).[ext]        ← accès API / BDD
+  (feature-name).test.[ext]
 ```
 
 Créer uniquement les fichiers identifiés à l'étape 1. Ne pas créer de fichiers spéculatifs.
+
+Pour chaque fichier de test : créer un stub vide avec les imports du framework de test et un bloc `describe` vide. Aucun cas de test rédigé à ce stade — les tests sont écrits pendant l'implémentation (Phase 5).
 
 ### Étape 3 — Contenu des stubs
 
@@ -61,7 +66,8 @@ Afficher la liste des fichiers créés et attendre confirmation avant de passer 
 Scaffolding terminé pour : [nom de la feature]
 
 Fichiers créés :
-- [liste des fichiers]
+- [liste des fichiers source]
+- [liste des fichiers de test (.test.[ext])]
 
 Entrées ajoutées dans component-catalog.md :
 - NomComposant (draft)

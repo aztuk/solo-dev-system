@@ -141,7 +141,7 @@ Exécuter `skills/product-challenge.md`.
 
 Ce skill :
 1. Analyse la tâche et identifie hypothèses implicites, edge cases et décisions de design ouvertes
-2. Poste toutes les questions en un seul message — attend la réponse humaine
+2. Pose les questions **une par une** via `AskUserQuestion`, avec des propositions concrètes à choisir — attend la réponse humaine à chaque question
 3. Écrit les conclusions dans `system/session-state-claude.md` avant de continuer
 
 **L'agent ne passe pas en Phase 3 tant que l'humain n'a pas répondu au challenge.**

@@ -13,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -Command \"if (Test-Path 'system/session-state-claude.md') { Get-Content 'system/session-state-claude.md' -Encoding UTF8 -Raw }\""
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/session-state-hook.ps1"
           }
         ]
       }

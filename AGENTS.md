@@ -25,6 +25,20 @@ Si l'humain pose une question simple (consultation, pas d'implémentation), exé
 
 ---
 
+## Session state — isolation par session
+
+Chaque session possède son propre fichier d'état, jamais partagé.
+
+- **Emplacement** : `system/.session-state/<id>.md` (dossier gitignoré, runtime).
+- **ID de session** :
+  - Claude Code / Cursor : l'ID est fourni et le chemin injecté par le hook (`SESSION_STATE_FILE`). Toujours écrire dans ce chemin.
+  - Codex (pas d'injection) : générer un ID unique au démarrage et créer `system/.session-state/<id>.md`.
+- **Règle d'or** : une session ne lit et n'écrit QUE son propre fichier. Elle ignore tous les autres fichiers du dossier — ils appartiennent à des sessions parallèles.
+- **Coordination inter-agents** : elle passe uniquement par le statut `[ en cours ]` de `roadmap.md`, jamais par le session-state.
+- **Nettoyage** : suppression du fichier en Phase 7 ; sweep des orphelins >24h au démarrage (session-start + hooks).
+
+---
+
 ## Fichiers à lire avant toute action
 
 Au démarrage de chaque session, lire dans cet ordre :
@@ -121,7 +135,7 @@ Ce skill :
 
 Une fois la tâche validée, marquer son statut `[ en cours ]` et son agent dans `roadmap.md`.
 
-Mettre à jour `system/session-state-claude.md` : Phase → 2, catégorie et contraintes actives selon le type de tâche.
+Mettre à jour le fichier de session (cf. §Session state) : Phase → 2, catégorie et contraintes actives selon le type de tâche.
 
 Router selon la catégorie de la tâche :
 
@@ -142,7 +156,7 @@ Exécuter `skills/product-challenge.md`.
 Ce skill :
 1. Analyse la tâche et identifie hypothèses implicites, edge cases et décisions de design ouvertes
 2. Pose les questions **une par une** via `AskUserQuestion`, avec des propositions concrètes à choisir — attend la réponse humaine à chaque question
-3. Écrit les conclusions dans `system/session-state-claude.md` avant de continuer
+3. Écrit les conclusions dans le fichier de session (cf. §Session state) avant de continuer
 
 **L'agent ne passe pas en Phase 3 tant que l'humain n'a pas répondu au challenge.**
 
@@ -150,7 +164,7 @@ Ce skill :
 
 ### PHASE 3 — Planification (selon difficulté)
 
-Mettre à jour `system/session-state-claude.md` : Phase → 3.
+Mettre à jour le fichier de session (cf. §Session state) : Phase → 3.
 
 #### Étape 3a — Vérification delta Figma ↔ Specs
 
@@ -215,7 +229,7 @@ Pour construire le plan, consulter :
 
 ### PHASE 4 — Audit design (tâches Dev uniquement)
 
-Mettre à jour `system/session-state-claude.md` : Phase → 4.
+Mettre à jour le fichier de session (cf. §Session state) : Phase → 4.
 
 Avant d'implémenter, exécuter `skills/design-audit.md`.
 
@@ -230,7 +244,7 @@ Ce skill détermine :
 
 ### PHASE 5 — Implémentation
 
-Mettre à jour `system/session-state-claude.md` : Phase → 5. Si des décisions sont en attente de validation humaine, les noter dans le champ **Décisions en attente**.
+Mettre à jour le fichier de session (cf. §Session state) : Phase → 5. Si des décisions sont en attente de validation humaine, les noter dans le champ **Décisions en attente**.
 
 Implémenter selon le plan validé (ou directement si XS/S).
 
@@ -249,7 +263,7 @@ Une fois l'implémentation terminée, exécuter `skills/unit-tests.md`.
 
 ### PHASE 6 — Compliance
 
-Mettre à jour `system/session-state-claude.md` : Phase → 6.
+Mettre à jour le fichier de session (cf. §Session state) : Phase → 6.
 
 Exécuter `skills/compliance.md`.
 
@@ -273,7 +287,7 @@ Une fois le compliance validé et les tests manuels effectués par l'humain :
 1. Exécuter `skills/commit-protocol.md`
 2. Mettre à jour `roadmap.md` : statut → `[ fait ]`, agent → nom de l'agent
 3. Mettre à jour `system/memory.md` si des décisions ou trade-offs significatifs ont été faits pendant la session
-4. Réinitialiser `system/session-state-claude.md` à l'état par défaut (aucune session active)
+4. Supprimer le fichier de session de cette session (`system/.session-state/<id>.md`)
 5. Signaler à l'humain que la session est terminée et que la tâche est clôturée
 
 ---

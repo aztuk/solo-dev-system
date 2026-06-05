@@ -27,3 +27,6 @@ yarn-error.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Runtime session state (per-session, ephemeral)
+system/.session-state/

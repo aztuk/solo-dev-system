@@ -8,9 +8,15 @@ Début de chaque session, quel que soit l'agent. C'est toujours le premier skill
 
 ## Protocole
 
-### Étape 1 — Lecture
+### Étape 1 — Initialisation session + lecture
 
-Lire dans cet ordre :
+D'abord, préparer l'isolation de session (cf. §Session state dans `AGENTS.md`) :
+- Sweep des orphelins : supprimer dans `system/.session-state/` tout fichier `*.md` dont la dernière modification dépasse 24h. (Claude Code / Cursor : déjà fait par le hook ; Codex : à faire ici.)
+- Résoudre l'ID de cette session :
+  - Claude Code / Cursor : utiliser le chemin injecté par le hook (`SESSION_STATE_FILE`).
+  - Codex : générer un ID unique (timestamp + random) et retenir le chemin `system/.session-state/<id>.md`.
+
+Puis lire dans cet ordre :
 1. `TODO.md`
 2. `roadmap.md`
 3. `system/memory.md` (les 5 dernières entrées suffisent pour le contexte)
@@ -96,9 +102,9 @@ Si non, indique quelle tâche tu préfères traiter.
 
 ---
 
-### Étape 6 — Initialiser system/session-state-claude.md
+### Étape 6 — Initialiser le fichier de session
 
-Une fois la tâche validée par l'humain, écrire dans `system/session-state-claude.md` :
+Une fois la tâche validée par l'humain, écrire dans le fichier de session de cette session (`system/.session-state/<id>.md`, cf. §Session state dans `AGENTS.md`) :
 
 ```
 # Session state — Claude Code
@@ -122,4 +128,4 @@ Une fois la tâche validée par l'humain, écrire dans `system/session-state-cla
 **Pending decisions** : None
 ```
 
-Ce fichier est mis à jour à chaque transition de phase dans AGENTS.md.
+Ce fichier est mis à jour à chaque transition de phase dans AGENTS.md, et supprimé en Phase 7.

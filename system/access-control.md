@@ -44,8 +44,8 @@ Toute modification de ce fichier passe par le skill `update-system.md`.
 | `AGENTS.md` | Tout agent | `update-system.md` | Décision humaine validée |
 | `CLAUDE.md` | Tout agent | `update-system.md` | Décision humaine validée |
 | `.cursor/rules/protocol.mdc` | Tout agent | `update-system.md` | Décision humaine validée |
-| `TODO.md` | Tout agent | Humain uniquement | Saisie directe humaine |
-| `roadmap.md` | Tout agent | Agent en session | Sync depuis `TODO.md` (début session) ou clôture de tâche |
+| `TODO.md` | Tout agent | Humain ou `commit-protocol.md` | Saisie directe humaine ; vidage après sync finale |
+| `roadmap.md` | Tout agent | Agent en session ou `commit-protocol.md` | Statut de tâche validée ; sync depuis `TODO.md` en fin de session |
 
 ---
 
@@ -69,8 +69,27 @@ Toute modification de ce fichier passe par le skill `update-system.md`.
 
 ---
 
+## Dossier tasks/
+
+| Fichier | Lecture | Écriture autorisée | Point d'entrée |
+|---|---|---|---|
+| `tasks/<slug>/exploration.md` | Tout agent | Agent en session Exploration | Phase Exploration validée |
+| `tasks/<slug>/plan.md` | Tout agent | Agent en session Planification | Validation humaine du plan |
+| `tasks/<slug>/review.md` | Tout agent | Agent en session Review | Phase Review validée |
+
+---
+
+## Fichiers système nouveaux
+
+| Fichier | Lecture | Écriture autorisée | Point d'entrée |
+|---|---|---|---|
+| `system/agent-patterns.md` | Tout agent | `update-system.md` | Décision humaine validée |
+| `plans/*.md` | Tout agent | Humain ou agent planification système | Décision de refonte |
+
+---
+
 ## Fichiers de code applicatif
 
 | Fichier | Lecture | Écriture autorisée | Point d'entrée |
 |---|---|---|---|
-| `src/**/*` | Tout agent | Agent en session | Tâche validée par l'humain dans `roadmap.md` |
+| `src/**/*` | Tout agent | Agent en session | Tâche validée par l'humain dans `roadmap.md` ou exception tracée dans le session-state |

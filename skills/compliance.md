@@ -2,11 +2,49 @@
 
 ## Déclencheur
 
-Exécuté par AGENTS.md après chaque implémentation, avant tout commit. Aucune exception.
+Exécuté par AGENTS.md après chaque implémentation, avant tout commit.
+
+AGENTS.md choisit le mode :
+- `lite` pour XS/S, docs, protocole, config isolée, correction sans UI/data.
+- `full` pour M+, feature utilisateur, UI significative, data, sécurité, architecture.
 
 ---
 
-## Protocole
+## Garde-fou Codex — audit sans vérification visuelle automatisée
+
+Si l'agent en cours est Codex, ce skill est un audit statique et conversationnel uniquement.
+
+Interdictions absolues, sauf demande explicite de l'humain dans le message courant :
+- Ne jamais lancer de serveur de développement pour vérifier l'implémentation.
+- Ne jamais ouvrir de navigateur, utiliser Playwright/Cypress/Puppeteer/agent-browser, ni automatiser une navigation.
+- Ne jamais prendre de screenshot.
+- Ne jamais exécuter de test visuel, E2E, smoke test navigateur ou vérification de rendu par serveur local.
+
+Les audits se font à partir des fichiers modifiés, des specs, des tokens, des catalogues et des résultats de tests unitaires. Toute vérification visuelle utile doit être formulée comme test manuel à effectuer par l'humain en Étape 5.
+
+---
+
+## Modes d'audit
+
+### Mode lite
+
+Audit court pour réduire la consommation de tokens. Périmètre :
+
+1. Fichiers modifiés pendant la session.
+2. Respect de `system/access-control.md` pour ces fichiers.
+3. Respect des règles non négociables de `system/governance.md` applicables.
+4. Absence de secret, clé API ou variable sensible hardcodée.
+5. Tests unitaires : `PASSÉ`, `N/A` ou blocage documenté.
+
+Ne pas relire les specs, tokens, catalogues design ou fichiers Figma si la tâche ne les touche pas.
+
+### Mode full
+
+Audit complet. Utiliser le protocole détaillé ci-dessous.
+
+---
+
+## Protocole full
 
 ### Étape 1 — Collecter les fichiers modifiés
 
@@ -71,7 +109,7 @@ Vérifier que les tests ont bien été écrits et exécutés via `skills/unit-te
 Afficher le rapport directement dans la conversation :
 
 ```
-Compliance — [nom de la feature] — [date]
+Compliance full — [nom de la feature] — [date]
 
 Audit 1 — Specs        : PASSÉ / [écarts]
 Audit 2 — Tokens       : PASSÉ / [écarts]
@@ -85,6 +123,20 @@ Résultat : PRÊT POUR COMMIT / BLOQUÉ ([n] écart(s))
 
 Aucun fichier créé. Le rapport vit uniquement dans le chat.
 
+Pour le mode lite, utiliser ce format :
+
+```
+Compliance lite — [nom de la tâche] — [date]
+
+Fichiers modifiés     : [liste]
+Access-control        : PASSÉ / [écarts]
+Gouvernance           : PASSÉ / [écarts]
+Secrets               : PASSÉ / [écarts]
+Tests                 : PASSÉ / N/A / [écarts]
+
+Résultat : PRÊT POUR COMMIT / BLOQUÉ ([n] écart(s))
+```
+
 ---
 
 ### Étape 4 — Corrections bloquantes
@@ -95,7 +147,7 @@ Si des écarts sont détectés :
 - Relancer uniquement l'audit concerné après correction
 - Si la correction implique une décision à impact long terme → déclencher `update-system.md` avant de continuer
 
-Logger dans `system/memory.md` tout écart significatif et sa correction.
+Logger dans `system/memory.md` tout écart significatif et sa correction, sauf dispense explicite de l'humain pour cette session.
 
 Ne pas passer à l'étape 5 tant que tous les audits ne sont pas `PASSÉ`.
 
@@ -114,5 +166,7 @@ Tests manuels — [nom de la feature]
 [ ] [État vide] → [Résultat attendu]
 [ ] [État erreur] → [Résultat attendu]
 ```
+
+Pour Codex, placer ici les vérifications visuelles ou de navigation qui auraient pu nécessiter un serveur, un navigateur ou un screenshot. Codex ne les exécute pas lui-même.
 
 Attendre confirmation explicite de l'humain avant d'autoriser le commit.

@@ -38,10 +38,12 @@ Avant d'appliquer, vérifier que les modifications respectent la règle d'imbric
 
 Mettre à jour chaque fichier identifié. Une modification par fichier, dans l'ordre de la liste.
 
-### 4. Logger dans memory.md
+### 5. Logger dans memory.md
 
 Ajouter une entrée dans `system/memory.md` :
 - Date
 - Décision prise
 - Fichiers mis à jour
 - Raisonnement ou contexte donné par l'humain
+
+Exception : si l'humain dispense explicitement la session de mise à jour `memory.md`, ne rien écrire dans `memory.md` et mentionner cette dispense dans le rapport final.

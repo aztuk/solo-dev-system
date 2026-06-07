@@ -1,116 +1,150 @@
-# Agent System Template
+# Agentic System
 
-An AI orchestration system for solo developers or small teams. It structures collaboration between a human and multiple AI agents (Claude Code, Codex, Cursor) around a shared protocol, a Figma-synced design system, and strict decision control.
+Systeme d'orchestration pour travailler avec plusieurs agents IA (Claude Code, Codex, Cursor) dans un meme projet. Le depot fournit un protocole commun, des skills atomiques, un backlog structure, un controle d'acces fichier par fichier et une memoire projet partagee.
 
----
-
-## How it works
-
-```
-Level 0 : Human
-Level 1 : AGENTS.md  <-  single orchestrator, read by all agents
-Level 2 : Skills     <-  atomic actions triggered by AGENTS.md
-```
-
-**`AGENTS.md`** is the only file every agent reads first. It defines the session protocol, decision rules, available skills, and guardrails. Each AI tool (Claude Code, Cursor, Codex) has a minimal adapter that points to it.
-
-**Skills** (`skills/`) are atomic actions: starting a session, auditing a component, syncing Figma, committing. A skill never delegates to another skill — all orchestration flows back through `AGENTS.md`.
-
-**System files** (`system/`) store durable decisions: governance, tokens, trade-off memory, access control. No agent modifies them freely — each file has an authorized editor defined in `system/access-control.md`.
+Le principe central est simple : l'humain decide, `AGENTS.md` orchestre, les skills executent.
 
 ---
 
-## Setup after fork
+## Architecture
 
-### 1. Configure the project
-
-Fill in the stack and conventions in `system/governance.md`:
-- **Tech stack** section: chosen technologies
-- **Naming conventions** section: adjust as needed
-- **Scope** section: what is in and out of scope
-
-### 2. Create a specs folder
-
-Create a folder for feature specifications (e.g. `specs/`). For each feature, a Markdown file describing expected behavior, business rules, and UI states.
-
-Update the reference in `system/governance.md` → **Reference files** section → *Feature specs* line.
-
-Update `AGENTS.md` → Phase 3a → replace *"specs folder defined in `system/governance.md`"* with the actual path.
-
-### 3. Connect Figma (optional)
-
-If the project has a Figma file:
-- Add the file URL in `system/governance.md`
-- Run `skills/figma-sync.md` to populate `system/tokens.md` and `design-system/`
-
-If no Figma, manually fill in tokens in `system/tokens.md` and disable references to `figma-sync.md` in `AGENTS.md`.
-
-### 4. Create the first tasks
-
-Write freely in `TODO.md` — one idea per line, no required format:
-
-```
-Create homepage
-Setup authentication
-Define user data model
+```text
+Niveau 0 : Humain
+Niveau 1 : AGENTS.md  <- orchestrateur unique
+Niveau 2 : Skills     <- actions atomiques
 ```
 
-At the next session, the agent reads `TODO.md`, classifies each entry (category, priority, difficulty) and adds it to `roadmap.md`. `TODO.md` is then cleared.
-
-### 5. Start a session
-
-Open a conversation with Claude Code (or Cursor, Codex). The agent automatically runs `skills/session-start.md`, which:
-1. Syncs `TODO.md` → `roadmap.md`
-2. Proposes the highest-priority task
-3. Waits for validation before acting
+- `AGENTS.md` est le protocole commun lu par tous les agents.
+- Les adapters (`CLAUDE.md`, `.cursor/rules/`, configuration Codex) ajoutent uniquement les consignes propres a chaque outil.
+- Les skills dans `skills/` sont des feuilles : ils ne s'appellent jamais entre eux.
+- Les decisions durables vivent dans `system/` : gouvernance, access control, memoire, tokens.
+- Les taches passent par `TODO.md`, `roadmap.md` et les artefacts `tasks/<slug>/`.
 
 ---
 
-## File structure
+## Cycle de session
 
+Au premier message, l'agent execute `skills/session-start.md` une seule fois.
+
+1. Il cree un etat de session ephemere dans `system/.session-state/<id>.md`.
+2. Il charge le cache minimal de gouvernance et d'access-control.
+3. En mode consultation, il repond sans charger la roadmap.
+4. En mode implementation, il travaille sur une tache existante ou attend une validation humaine pour une exception hors roadmap.
+
+Les fichiers de session sont ignores par Git et nettoyes automatiquement quand ils ont plus de 24h.
+
+---
+
+## Cycle de tache
+
+Les nouvelles demandes entrent d'abord dans `TODO.md`. La synchronisation vers `roadmap.md` se fait via `skills/sync-todo.md`, notamment depuis `skills/next-task.md` ou en fin de session.
+
+Une tache peut suivre le pipeline :
+
+```text
+Exploration -> Planification -> Implementation -> Review
 ```
-AGENTS.md                        <- single protocol, read by all agents
-CLAUDE.md                        <- Claude Code adapter
-.cursor/rules/protocol.mdc       <- Cursor adapter
-TODO.md                          <- free-form task dump (human -> agents)
-roadmap.md                       <- structured backlog (managed by agents)
-later.md                         <- temporary decisions to revisit later
+
+| Phase | Skill |
+|---|---|
+| Choisir la prochaine tache | `skills/next-task.md` |
+| Exploration | `skills/phase-exploration.md` |
+| Planification | `skills/phase-plan.md` |
+| Implementation | `skills/phase-implementation.md` |
+| Review | `skills/phase-review.md` |
+
+Pour les taches M+, `skills/product-challenge.md` intervient avant la planification. Pour les changements UI ou design system, `skills/design-audit.md` verifie les composants et tokens avant implementation.
+
+---
+
+## Git et cloture
+
+La cloture passe par `skills/phase-review.md`, puis `skills/commit-protocol.md`.
+
+Avant commit :
+
+- les tests unitaires sont executes si du code executable a change ;
+- `skills/compliance.md` doit passer ;
+- l'humain valide les tests manuels si necessaire ;
+- seuls les fichiers du perimetre de la tache sont stages.
+
+Apres commit, le protocole peut mettre a jour la roadmap, synchroniser `TODO.md`, evaluer `system/memory.md`, puis supprimer l'etat de session.
+
+---
+
+## Structure du depot
+
+```text
+AGENTS.md                         Protocole commun et orchestrateur
+CLAUDE.md                         Adapter Claude Code
+.cursor/rules/protocol.mdc        Adapter Cursor
+.claude/rules/                    Regles Claude Code par famille de fichiers
+TODO.md                           Entrees libres de l'humain
+roadmap.md                        Backlog structure gere par les agents
 
 system/
-  governance.md                  <- stack, conventions, non-negotiable rules
-  tokens.md                      <- design tokens (synced from Figma)
-  memory.md                      <- decision and trade-off log
-  access-control.md              <- who can write what and through which path
-  session-state-claude.md        <- live session state (injected via hook)
-
-design-system/
-  component-catalog.md           <- component index
-  flows-catalog.md               <- flow/journey index
-  components/                    <- per-component documentation
-  flows/                         <- per-flow documentation
+  governance.md                   Regles non negociables du projet
+  access-control.md               Droits de lecture/ecriture par fichier
+  memory.md                       Decisions et trade-offs durables
+  tokens.md                       Tokens design
+  agent-patterns.md               Patterns de delegation et routing modele
+  .session-state/                 Etats de session ephemeres ignores par Git
 
 skills/
-  session-start.md               <- session startup (TODO sync + task proposal)
-  product-challenge.md           <- product thinking phase (M+ tasks)
-  design-audit.md                <- component + token audit before implementation
-  scaffold-feature.md            <- feature file stub creation
-  unit-tests.md                  <- unit test generation after implementation
-  compliance.md                  <- post-implementation audit before commit
-  figma-sync.md                  <- Figma -> tokens.md + design-system/ sync
-  commit-protocol.md             <- verification + commit + session close
-  update-system.md               <- system file update after human decision
-  create-skill.md                <- new skill creation
+  session-start.md                Initialisation de session
+  next-task.md                    Selection de tache
+  sync-todo.md                    Synchronisation TODO -> roadmap
+  phase-exploration.md            Exploration structuree
+  phase-plan.md                   Planification
+  phase-implementation.md         Implementation
+  phase-review.md                 Review, tests, compliance, commit
+  implementation-guardrails.md    Verifications avant code
+  product-challenge.md            Challenge produit pour taches M+
+  design-audit.md                 Audit composants et tokens
+  unit-tests.md                   Verification tests apres implementation
+  compliance.md                   Audit avant commit
+  figma-sync.md                   Sync Figma vers tokens/design-system
+  commit-protocol.md              Commit, sync finale, cloture
+  update-system.md                Mise a jour des fichiers systeme
+  create-skill.md                 Creation de nouveau skill
+
+tasks/
+  <slug>/
+    exploration.md
+    plan.md
+    review.md
+
+design-system/
+  component-catalog.md
+  flows-catalog.md
+  components/
+  flows/
 
 scripts/
-  migrate-to-project.ps1         <- apply system updates to existing projects
+  session-state-hook.ps1
+  session-state-cursor.ps1
+  session-state-sweep.ps1
+  migrate-to-project.ps1
 ```
 
 ---
 
-## Core rules
+## Regles fortes
 
-- **Never decide alone**: any product, architecture, or governance decision is proposed to the human with a recommendation. The agent waits for validation.
-- **Never hardcode values**: all visual values come from `system/tokens.md`.
-- **Never commit without compliance**: commit only happens after explicit human validation of the compliance report.
-- **Figma is the source of truth**: specs are a starting point, not the final reference.
-- **No nesting**: skills never call each other.
+- L'humain garde la decision sur le produit, l'architecture et la gouvernance.
+- Un agent verifie `system/access-control.md` avant toute ecriture.
+- Les valeurs visuelles ne sont jamais hardcodees : elles viennent des tokens.
+- Aucun composant n'est cree sans audit design applicable.
+- Aucun commit ne part sans compliance validee.
+- Les skills ne s'appellent jamais entre eux.
+
+---
+
+## Installer dans un projet
+
+1. Copier les fichiers du template dans le projet cible.
+2. Renseigner `system/governance.md` : stack, conventions, scope.
+3. Adapter `system/access-control.md` aux dossiers reels du projet.
+4. Remplir ou synchroniser `system/tokens.md`.
+5. Ajouter les premieres demandes dans `TODO.md`.
+6. Demander a l'agent : "prochaine tache de la stack".

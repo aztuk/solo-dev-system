@@ -61,9 +61,25 @@ Ne jamais pousser vers le remote sans instruction explicite de l'humain.
 
 ---
 
-### Étape 5 — Évaluation memory.md (obligatoire)
+### Étape 5 — Archive artefacts + mise à jour roadmap
 
-Après le commit, toujours évaluer activement — ne jamais sauter cette étape.
+Si la session est liée à une tâche avec artefacts dans `tasks/<slug>/` :
+- Vérifier que les fichiers `tasks/<slug>/` sont inclus dans les fichiers stagés
+- Mettre à jour `roadmap.md` : passer la phase de la tâche à `fait`
+
+Si la session était une exception urgente hors roadmap : ajouter la tâche dans `roadmap.md` avec phase `fait`, sauf dispense explicite de l'humain.
+
+---
+
+### Étape 6 — Synchronisation TODO → roadmap.md
+
+Exécuter `skills/sync-todo.md` après le commit.
+
+---
+
+### Étape 7 — Évaluation memory.md
+
+Après le commit, évaluer activement.
 
 Se poser les questions suivantes sur la session qui vient de se terminer :
 - Une décision d'architecture ou de design a-t-elle été prise ?
@@ -72,14 +88,14 @@ Se poser les questions suivantes sur la session qui vient de se terminer :
 - Une règle de gouvernance a-t-elle été créée ou modifiée ?
 - Une librairie externe a-t-elle été ajoutée ou refusée, et pourquoi ?
 
-**Si au moins une réponse est oui** → ajouter une entrée dans `system/memory.md`.
+**Si au moins une réponse est oui** → ajouter une entrée dans `system/memory.md`, sauf dispense explicite de l'humain pour cette session.
 **Si toutes les réponses sont non** → ne rien écrire, mais avoir évalué explicitement.
 
 ---
 
-### Étape 6 — Clôture de session
+### Étape 8 — Clôture de session
 
-1. Mettre à jour `roadmap.md` — statut `[ fait ]`, colonne Agent renseignée
+1. Supprimer le fichier `system/.session-state/<id>.md` de cette session.
 2. Afficher le résumé de fin de session et s'arrêter :
 
 ```
@@ -87,6 +103,7 @@ Session terminée.
 
 Tâche complétée  : [description]
 Commit           : [hash court] — [message]
+Roadmap          : [mise à jour / dispensée / N/A]
 Memory.md        : [mis à jour — sujet] / [rien à logger]
 ```
 

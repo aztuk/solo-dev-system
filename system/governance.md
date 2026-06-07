@@ -115,7 +115,6 @@ L'orchestrateur (AGENTS.md) applique cette vérification avant chaque délégati
 
 | Besoin | Fichier |
 |---|---|
-| Décisions temporaires | `later.md` |
 | Contexte et trade-offs passés | `system/memory.md` |
 | Design tokens | `system/tokens.md` |
 | Contrôle d'accès aux fichiers | `system/access-control.md` |

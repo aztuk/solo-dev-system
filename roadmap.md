@@ -1,20 +1,18 @@
 # Roadmap
 
 Géré par les agents. Ne pas modifier manuellement.
-
-Alimenté par la sync TODO→Roadmap en début de session via `session-start.md`.
+Alimenté par `skills/sync-todo.md` à la demande.
 
 ## Légende
 
-**Statut** : `[ à faire ]` `[ en cours ]` `[ fait ]`
-**Agent** : `Claude Code` | `Codex` | `—`
+**Phase** : `à faire` | `Exploration` | `Planification` | `Implémentation` | `Review` | `fait`
+**Pipeline** : phases effectivement nécessaires dans l'ordre (ex: `Explo→Plan→Impl→Review`)
+**Modèle** : `low` (Haiku) | `mid` (Sonnet) | `high` (Opus)
 **Priorité** : `P1` (critique) | `P2` (important) | `P3` (nice to have)
-**Difficulté** : `XS` | `S` | `M` | `L` | `XL`
-**Catégorie** : `Dev` | `Design` | `Infra` | `Produit` | `Data`
 
 ---
 
 ## Tâches
 
-| Statut | Agent | Priorité | Difficulté | Catégorie | Description | Références |
-|---|---|---|---|---|---|---|
+| Phase | Tâche | Pipeline | Modèle | Priorité | Dossier artefacts |
+|---|---|---|---|---|---|

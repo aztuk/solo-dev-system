@@ -13,7 +13,8 @@ Ignore pour XS et S — passer directement a la Phase 3.
 ### Etape 1 — Analyse
 
 Lire :
-- La description de la tache validee dans `roadmap.md`
+- La description de la tache validee dans le fichier de session
+- `roadmap.md` seulement si la tache y est deja suivie
 - La spec correspondante si elle existe
 - `system/memory.md` (decisions passees pertinentes)
 - Pour les taches Dev : `design-system/flows/` et `design-system/components/` si pertinents
@@ -52,9 +53,9 @@ Regles imperatives :
 
 Attendre la reponse de chaque question avant de poser la suivante. Ne rien implementer tant que toutes les questions ne sont pas tranchees.
 
-### Etape 4 — Ecrire la synthese dans session-state-claude.md
+### Etape 4 — Ecrire la synthese dans le fichier de session
 
-Une fois la reponse recue, mettre a jour `system/session-state-claude.md` :
+Une fois la reponse recue, mettre a jour le fichier de session de cette session (`system/.session-state/<id>.md`) :
 - Phase → 2b (challenge complete)
 - Ajouter le champ **Challenge conclusions** avec un resume des decisions prises (2-5 lignes max, format bullet)
 

@@ -29,4 +29,18 @@ Format d'une entrée :
 
 ## Log
 
-*(vide — les entrées seront ajoutées au fil des sessions)*
+## 2026-06-06 — Rapport de contexte en fin de session
+
+**Contexte** : l'humain veut voir, en fin de session, où le contexte/tokens a été le plus consommé : moment, fichiers, skills et actions.
+**Décision** : ajouter un `Context usage log` approximatif dans le session-state et produire en Phase 7 un rapport de session basé sur ce journal.
+**Alternatives écartées** : instrumentation précise des tokens par appel modèle, jugée plus lourde et reportée ; l'option retenue privilégie une estimation exploitable `XS/S/M/L/XL`.
+**Impact** : `AGENTS.md`, `skills/session-start.md`, `system/memory.md`. La même modification a été appliquée dans `SpaceExploration` pour garder les protocoles symétriques.
+**Décidé par** : Humain, avec exécution Codex.
+
+## 2026-06-05 — Garde-fous d'implémentation
+
+**Contexte** : la Phase 5 manquait de règles explicites pour éviter les fichiers trop gros, la duplication de logique et la création excessive de fichiers.
+**Décision** : créer `skills/implementation-guardrails.md` et l'appeler en Phase 5 uniquement quand du code doit être écrit ou modifié.
+**Alternatives écartées** : intégrer toutes les règles directement dans `AGENTS.md`, rejeté pour garder l'orchestrateur lisible ; utiliser un agent externe générique, rejeté pour préserver l'architecture locale sans imbrication.
+**Impact** : `AGENTS.md`, `skills/implementation-guardrails.md`, `system/memory.md`.
+**Décidé par** : Humain, avec exécution Codex.

@@ -2,130 +2,69 @@
 
 ## Déclencheur
 
-Début de chaque session, quel que soit l'agent. C'est toujours le premier skill exécuté.
+Début de chaque session, avant toute réponse ou action.
 
 ---
 
-## Protocole
+## Modes
 
-### Étape 1 — Initialisation session + lecture
+| Mode | Quand |
+|---|---|
+| `consultation` | Question, analyse, explication, aucune écriture demandée |
+| `implementation` | Création, modification, correction, ajout, commit |
 
-D'abord, préparer l'isolation de session (cf. §Session state dans `AGENTS.md`) :
-- Sweep des orphelins : supprimer dans `system/.session-state/` tout fichier `*.md` dont la dernière modification dépasse 24h. (Claude Code / Cursor : déjà fait par le hook ; Codex : à faire ici.)
-- Résoudre l'ID de cette session :
-  - Claude Code / Cursor : utiliser le chemin injecté par le hook (`SESSION_STATE_FILE`).
-  - Codex : générer un ID unique (timestamp + random) et retenir le chemin `system/.session-state/<id>.md`.
-
-Puis lire dans cet ordre :
-1. `TODO.md`
-2. `roadmap.md`
-3. `system/memory.md` (les 5 dernières entrées suffisent pour le contexte)
+Si le mode n'est pas évident : `consultation` si aucune écriture, `implementation` dès qu'une modification est demandée.
 
 ---
 
-### Étape 2 — Synchronisation TODO → roadmap.md
+## Étape 1 — Initialisation session
 
-Pour chaque entrée présente dans `TODO.md` :
+- Sweep des orphelins : supprimer dans `system/.session-state/` tout fichier `*.md` dont la dernière modification dépasse 24h.
+- Résoudre l'ID de session :
+  - Claude Code / Cursor : utiliser `SESSION_STATE_FILE` si injecté.
+  - Codex : générer un ID unique et retenir `system/.session-state/<id>.md`.
+- Ne jamais lire les fichiers de session des autres agents.
 
-#### 2a — Vérifier les doublons
-Comparer la description de l'entrée avec les tâches existantes dans `roadmap.md` (statuts `[ à faire ]`, `[ en cours ]` et `[ fait ]`).
-- Si une tâche identique ou très proche existe déjà → ignorer l'entrée, ne pas créer de doublon.
-- Si la tâche existe avec statut `[ fait ]` → signaler à l'humain : "Cette tâche semble déjà effectuée — confirmes-tu qu'il faut la relancer ?"
-
-#### 2b — Classifier la tâche
-Pour chaque entrée nouvelle (non doublon), déterminer :
-
-| Champ | Valeur possible | Critère de classification |
-|---|---|---|
-| Catégorie | `Dev` | Implémentation code, composants, features |
-| | `Design` | Figma, tokens, composants visuels, flows |
-| | `Infra` | Setup, configuration, dépendances, CI |
-| | `Data` | Schéma BDD, migrations |
-| | `Produit` | Décision de scope, règle métier, priorité |
-| Priorité | `P1` | Bloquant pour la phase en cours |
-| | `P2` | Important mais non bloquant |
-| | `P3` | Nice to have |
-| Difficulté | `XS` | < 30 min, modification isolée |
-| | `S` | 30 min – 1h, un seul fichier ou composant |
-| | `M` | 1h – 3h, plusieurs fichiers, un flow complet |
-| | `L` | 3h – 1 jour, feature complète |
-| | `XL` | > 1 jour, feature complexe ou refactoring majeur |
-
-Si la classification n'est pas évidente depuis le texte de l'entrée, choisir la valeur la plus prudente (priorité basse, difficulté haute) et le signaler à l'humain.
-
-#### 2c — Identifier les références
-Si l'entrée mentionne une spec, un lien Figma ou une URL externe, les ajouter dans la colonne Références.
-
-#### 2d — Ajouter dans roadmap.md
-Ajouter la ligne dans le tableau de `roadmap.md` avec statut `[ à faire ]` et agent `—`.
-
----
-
-### Étape 3 — Vider TODO.md
-
-Une fois la sync terminée, vider la section d'entrées de `TODO.md`. Ne conserver que l'en-tête et les instructions du fichier.
-
----
-
-### Étape 4 — Présenter un résumé de sync
-
-Afficher à l'humain :
-- Nombre de tâches ajoutées à `roadmap.md`
-- Nombre de doublons ignorés
-- Tâches actuellement `[ en cours ]` (pour information seulement — un autre agent travaille dessus)
-- Tâches nécessitant une clarification (si applicable)
-
----
-
-### Étape 5 — Proposer la prochaine tâche
-
-Sélectionner la tâche `[ à faire ]` la plus prioritaire selon cet ordre :
-1. Priorité P1 en premier
-2. À priorité égale, difficulté la plus faible en premier (commencer par ce qui débloquerait d'autres tâches)
-
-Ignorer toutes les tâches `[ en cours ]` sans poser de question — elles sont prises en charge par un autre agent en parallèle. Ne pas les mentionner autrement que dans le résumé de sync.
-
-Présenter la proposition à l'humain :
+Créer le fichier de session :
 
 ```
-Tâche proposée : [description]
-Catégorie      : [catégorie]
-Priorité       : [P1/P2/P3]
-Difficulté     : [XS/S/M/L/XL]
-Références     : [liens ou fichiers]
+# Session state
 
-Confirmes-tu qu'on travaille sur cette tâche ?
-Si non, indique quelle tâche tu préfères traiter.
+**Phase session** : consultation / implementation
+**Tâche**         : [nom ou N/A]
+**Phase tâche**   : [Exploration/Planification/Implémentation/Review ou N/A]
+**Modèle**        : [low/mid/high ou N/A]
+**Artefact**      : [chemin chargé ou aucun]
+
+**Cache governance** : [2-3 règles non négociables pertinentes]
+**Cache access**     : [fichiers autorisés pour cette tâche]
+
+**Context usage log** :
+| Heure | Action | Fichier | Taille |
+|---|---|---|---|
 ```
-
-**Attendre la validation explicite de l'humain avant de continuer vers la Phase 2 de AGENTS.md.**
 
 ---
 
-### Étape 6 — Initialiser le fichier de session
+## Étape 2 — Cache minimal
 
-Une fois la tâche validée par l'humain, écrire dans le fichier de session de cette session (`system/.session-state/<id>.md`, cf. §Session state dans `AGENTS.md`) :
+Lire `system/governance.md` et `system/access-control.md` uniquement si le cache est absent.
 
-```
-# Session state — Claude Code
-
-> Injected automatically before each message via UserPromptSubmit hook.
-> Updated by Claude Code at each phase transition.
-> Do not edit manually.
+Écrire dans le session-state un résumé court (2-3 règles max, fichiers autorisés pour la tâche). Ne pas copier les fichiers complets.
 
 ---
 
-**Phase**    : 1 — Start
-**Task**     : [validated task description]
-**Category** : [category]
-**Priority** : [P1/P2/P3]
+## Étape 3 — Mode consultation
 
-**Active constraints** :
-- Never decide alone (product, architecture, governance)
-- Always check access-control.md before writing system files
-- Never commit without validated compliance
+1. Ne pas lire `TODO.md`, `roadmap.md`, ni aucun artefact de tâche.
+2. Rendre la main à AGENTS.md pour répondre directement.
 
-**Pending decisions** : None
-```
+---
 
-Ce fichier est mis à jour à chaque transition de phase dans AGENTS.md, et supprimé en Phase 7.
+## Étape 4 — Mode implementation
+
+1. Si déclenché par `next-task.md` : l'artefact de phase est déjà chargé, ne pas recharger.
+2. Si déclenché directement : identifier la tâche et charger l'artefact approprié (une lecture max).
+3. Ne pas lire `TODO.md`. Ne jamais charger plus d'un artefact de tâche par session.
+
+**Règle absolue** : `session-start.md` ne charge jamais plus d'un artefact de tâche par session.

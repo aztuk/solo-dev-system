@@ -2,7 +2,25 @@
 
 ## Déclencheur
 
-Exécuté par AGENTS.md après chaque implémentation (Phase 5), avant le compliance (Phase 6). Aucune exception.
+Exécuté par AGENTS.md après chaque implémentation de code exécutable (Phase 5), avant le compliance (Phase 6).
+
+Si seuls des fichiers de documentation, protocole, gouvernance ou orchestration Markdown ont changé, les tests unitaires sont `N/A`. L'agent le signale dans le chat et passe au compliance.
+
+---
+
+## Garde-fou Codex — tests autorisés uniquement
+
+Si l'agent en cours est Codex, ce skill est strictement limité aux tests unitaires non interactifs.
+
+Interdictions absolues, sauf demande explicite de l'humain dans le message courant :
+- Ne jamais lancer de serveur de développement (`npm run dev`, `next dev`, `vite --host`, etc.).
+- Ne jamais ouvrir de navigateur, utiliser Playwright/Cypress/Puppeteer/agent-browser, ni automatiser une navigation.
+- Ne jamais prendre de screenshot.
+- Ne jamais exécuter de test visuel, E2E, smoke test navigateur ou vérification de rendu par serveur local.
+
+La commande exécutée doit terminer seule et couvrir uniquement la suite unitaire (`vitest run`, `jest`, `pytest`, `go test ./...`, etc.). Si la seule commande disponible lance un serveur, un navigateur ou une suite visuelle/E2E, ne pas l'exécuter : signaler le blocage à l'humain et demander une commande de tests unitaires adaptée.
+
+Si une vérification visuelle semble utile, la noter pour la liste de tests manuels du compliance au lieu de l'exécuter.
 
 ---
 
@@ -46,6 +64,8 @@ Emplacement des fichiers de test : suivre la convention définie dans `system/go
 Exécuter la commande de test définie dans `system/governance.md`.
 
 Si aucune commande n'est définie, utiliser la commande standard du framework détecté (`npm test`, `pytest`, `go test ./...`, etc.) et signaler l'absence de convention à l'humain.
+
+Pour Codex, vérifier avant exécution que la commande ne lance ni serveur, ni navigateur, ni test visuel/E2E. En cas de doute, ne pas exécuter la commande et demander confirmation à l'humain.
 
 ---
 

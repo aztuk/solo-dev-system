@@ -1,0 +1,50 @@
+# Agent Patterns
+
+Référence pour le spawning de subagents et le routing de modèle.
+
+## Routing modèle
+
+| Valeur roadmap | Modèle Claude | Quand |
+|---|---|---|
+| `low` | claude-haiku-4-5 | Exploration, recherche codebase, tâches XS |
+| `mid` | claude-sonnet-4-6 | Planification, Implémentation standard, Review |
+| `high` | claude-opus-4-8 | Implémentation L/XL, débogage complexe |
+
+## Patterns de subagents
+
+### Explore
+- **Rôle** : recherche codebase, lecture fichiers, analyse
+- **Outils** : lecture seule (Glob, Grep, Read, WebSearch)
+- **Modèle** : `low`
+- **Sortie** : `tasks/<slug>/exploration.md` (~200 lignes max)
+
+### Plan
+- **Rôle** : architecture, découpage en étapes, identification des risques
+- **Outils** : lecture seule (plan mode)
+- **Modèle** : selon roadmap (`mid` ou `high`)
+- **Sortie** : `tasks/<slug>/plan.md` (~100 lignes max), validé par l'humain avant implémentation
+
+### Implement
+- **Rôle** : écriture de code selon le plan validé
+- **Outils** : tous
+- **Modèle** : selon roadmap
+- **Contexte chargé** : `tasks/<slug>/plan.md` uniquement
+
+### Review
+- **Rôle** : relecture du diff, détection de bugs et simplifications
+- **Outils** : lecture seule + git diff
+- **Modèle** : `mid`
+- **Contexte chargé** : diff git uniquement
+- **Sortie** : `tasks/<slug>/review.md` (~50 lignes max)
+
+## Règle de distillation
+
+| Phase en cours | Fichier chargé | Fichiers exclus |
+|---|---|---|
+| Exploration | rien (session fraîche) | tout |
+| Planification | `exploration.md` uniquement | roadmap, autres tâches |
+| Implémentation | `plan.md` uniquement | `exploration.md`, roadmap |
+| Review | diff git uniquement | `plan.md`, `exploration.md` |
+
+Chaque artefact de phase est auto-suffisant pour la phase suivante.
+L'agent de la phase N ne lit jamais les artefacts des phases N-2 et antérieures.

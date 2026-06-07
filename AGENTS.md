@@ -1,51 +1,42 @@
 # AGENTS.md — Orchestrateur
 
-Ce fichier définit le protocole de session commun à tous les agents (Claude Code, Codex). Chaque session, quel que soit l'agent utilisé, suit exactement ce protocole dans l'ordre défini.
+Protocole commun à tous les agents (Claude Code, Codex). Les skills ne s'appellent jamais entre eux.
 
-**Position dans la hiérarchie :**
-```
-Niveau 0 : Humain
-Niveau 1 : AGENTS.md  ←  tu es ici
-Niveau 2 : Skills
-```
-
-Règle absolue : AGENTS.md est le seul orchestrateur. Les skills ne s'appellent jamais entre eux.
+**Hiérarchie** : Humain → AGENTS.md → Skills
 
 ---
 
-## RÈGLE D'ENTRÉE — À appliquer avant tout
+## Règle d'entrée
 
-**Quelle que soit la première demande de l'humain** — une question, une instruction, une tâche, n'importe quoi — exécuter `skills/session-start.md` en premier si ce n'est pas déjà fait dans cette session.
+Au premier message d'une session, exécuter `skills/session-start.md` (une seule fois par session).
 
-Ne jamais répondre directement à une demande sans avoir d'abord complété `session-start.md`.
-
-La seule exception : si `session-start.md` a déjà été exécuté plus tôt dans cette même session, ne pas le relancer.
-
-Si l'humain pose une question simple (consultation, pas d'implémentation), exécuter quand même `session-start.md` puis répondre à la question.
-
----
-
-## Session state — isolation par session
-
-Chaque session possède son propre fichier d'état, jamais partagé.
-
-- **Emplacement** : `system/.session-state/<id>.md` (dossier gitignoré, runtime).
-- **ID de session** :
-  - Claude Code / Cursor : l'ID est fourni et le chemin injecté par le hook (`SESSION_STATE_FILE`). Toujours écrire dans ce chemin.
-  - Codex (pas d'injection) : générer un ID unique au démarrage et créer `system/.session-state/<id>.md`.
-- **Règle d'or** : une session ne lit et n'écrit QUE son propre fichier. Elle ignore tous les autres fichiers du dossier — ils appartiennent à des sessions parallèles.
-- **Coordination inter-agents** : elle passe uniquement par le statut `[ en cours ]` de `roadmap.md`, jamais par le session-state.
-- **Nettoyage** : suppression du fichier en Phase 7 ; sweep des orphelins >24h au démarrage (session-start + hooks).
+| Mode | Déclencheur |
+|---|---|
+| `consultation` | Question, analyse, explication, aucune écriture demandée |
+| `implementation` | Créer, modifier, corriger, ajouter, committer |
 
 ---
 
-## Fichiers à lire avant toute action
+## Session state
 
-Au démarrage de chaque session, lire dans cet ordre :
-1. `system/governance.md` — règles non-négociables
-2. `system/access-control.md` — autorisations d'écriture par fichier
-3. `system/memory.md` — contexte et décisions passées
-4. `system/tokens.md` — tokens disponibles
+Chaque session possède son propre fichier d'état dans `system/.session-state/<id>.md` (gitignoré).
+
+- Claude Code / Cursor : utiliser `SESSION_STATE_FILE` si injecté.
+- Codex : générer un ID unique au démarrage.
+- Une session lit et écrit uniquement son propre fichier.
+- Coordination inter-agents : uniquement via les statuts de `roadmap.md`.
+- Nettoyage : supprimer en Phase 7 ; orphelins > 24h supprimés au démarrage.
+
+Format défini dans `skills/session-start.md`. Ne relire les fichiers complets que si le cache est absent ou insuffisant. Logguer les lectures significatives dans le `Context usage log`.
+
+---
+
+## Règles spécifiques à Codex
+
+- Ne jamais lancer de serveur de développement sauf demande explicite.
+- Ne jamais prendre de screenshots sauf demande explicite.
+- Après implémentation : exécuter `skills/unit-tests.md` si du code exécutable a changé.
+- Si vérification visuelle utile : proposer comme test manuel en Phase 6.
 
 ---
 
@@ -53,26 +44,27 @@ Au démarrage de chaque session, lire dans cet ordre :
 
 | Skill | Déclencheur |
 |---|---|
-| `skills/session-start.md` | Début de chaque session |
-| `skills/product-challenge.md` | Après classification, pour toute tâche M+ (Dev, Design, Produit) |
+| `skills/session-start.md` | Début de session |
+| `skills/next-task.md` | "Prochaine tâche de la stack" ou équivalent |
+| `skills/sync-todo.md` | Déclenché uniquement par `commit-protocol.md` |
+| `skills/phase-exploration.md` | Phase Exploration d'une tâche |
+| `skills/phase-plan.md` | Phase Planification d'une tâche |
+| `skills/phase-implementation.md` | Phase Implémentation d'une tâche |
+| `skills/phase-review.md` | Phase Review d'une tâche |
+| `skills/product-challenge.md` | Pour toute tâche M+ (Dev, Design, Produit) |
 | `skills/design-audit.md` | Avant toute création ou modification de composant ou valeur visuelle |
-| `skills/scaffold-feature.md` | Lancement d'une nouvelle feature Dev validée |
-| `skills/unit-tests.md` | Après chaque implémentation (Phase 5), avant compliance |
-| `skills/compliance.md` | Après chaque implémentation et tests unitaires validés, avant commit |
-| `skills/figma-sync.md` | Après mise à jour de la page Tokens ou composants dans Figma |
-| `skills/commit-protocol.md` | Après validation humaine du compliance |
-| `skills/update-system.md` | Après chaque décision humaine à impact long terme |
-| `skills/create-skill.md` | Quand une décision humaine implique la création d'un nouveau skill |
+| `skills/implementation-guardrails.md` | Avant tout code, exécuté par `phase-implementation.md` |
+| `skills/unit-tests.md` | Après implémentation de code exécutable, exécuté par `phase-review.md` |
+| `skills/compliance.md` | Après tests unitaires, exécuté par `phase-review.md` |
+| `skills/figma-sync.md` | Après mise à jour de la page Tokens, composants ou flows dans Figma |
+| `skills/commit-protocol.md` | Après validation humaine du compliance et des tests manuels |
+| `skills/update-system.md` | Après décision humaine à impact long terme |
+| `skills/create-skill.md` | Quand une décision humaine implique un nouveau skill |
 
----
+Pour le spawning de subagents et le routing de modèle : `system/agent-patterns.md`.
 
-## Validation access-control
+Avant chaque délégation, vérifier `system/access-control.md`. En cas de mismatch :
 
-Avant chaque délégation à un skill, vérifier dans `system/access-control.md` :
-- Le skill appelé est-il bien l'éditeur autorisé pour les fichiers qu'il va modifier ?
-- Le point d'entrée correspond-il à celui défini ?
-
-**Si mismatch détecté :**
 ```
 ⚠️ Mismatch access-control détecté
 Fichier cible    : [fichier]
@@ -80,223 +72,63 @@ Fichier cible    : [fichier]
 Éditeur réel     : [skill ou agent qui tente l'écriture]
 Action           : bloqué — attente de validation humaine
 ```
-Ne pas continuer tant que l'humain n'a pas validé.
 
 ---
 
 ## Demandes hors roadmap
 
-Toute demande reçue pendant une session est d'abord classifiée :
-
-**Consultation** (expliquer, analyser, répondre à une question) → répondre directement, aucune trace nécessaire.
-
-**Implémentation** (créer, modifier, corriger, ajouter) → vérifier si la tâche existe dans `roadmap.md`.
+Les nouvelles tâches entrent via `skills/sync-todo.md` (depuis `TODO.md`), jamais directement dans `roadmap.md`.
 
 Si la tâche n'existe pas dans `roadmap.md` :
 
 ```
 ⚠️ Tâche hors roadmap détectée
-Demande   : [description de ce qui a été demandé]
-Action    : cette tâche n'existe pas dans roadmap.md
+Demande : [description]
 
 Options :
-1. Je l'ajoute à roadmap.md et on suit le protocole normal
-2. Exception urgente — j'exécute maintenant et je la trace
-   immédiatement dans roadmap.md comme [ fait ]
+1. Je l'ajoute au suivi et on suit le protocole normal
+2. Exception urgente — j'exécute maintenant, tracée en fin de session
 3. On abandonne cette demande
 ```
 
-Ne rien exécuter tant que l'humain n'a pas choisi une option.
-
-Pour l'option 2, ajouter la ligne dans `roadmap.md` avec statut `[ fait ]`, catégorie, difficulté et agent renseignés, **avant** de commencer l'exécution.
-
 ---
 
-## Protocole de session
+## Exécution d'une tâche
 
-### PHASE 1 — Démarrage
+### Démarrage
 
-Exécuter `skills/session-start.md`.
+Exécuter `skills/session-start.md`. La synchronisation `TODO.md` → `roadmap.md` n'a plus lieu au démarrage.
 
-Ce skill :
-1. Lit `TODO.md`
-2. Lit `roadmap.md`
-3. Synchronise : chaque entrée de `TODO.md` est analysée, classifiée et ajoutée dans `roadmap.md` si elle n'existe pas déjà (vérification doublon sur la description)
-4. Vide `TODO.md` après sync
-5. Identifie les tâches `[ en cours ]` dans `roadmap.md` → les signaler à l'humain comme tâches déjà prises en charge par un autre agent
-6. Parmi les tâches `[ à faire ]`, propose la plus prioritaire (P1 en premier, puis tri par difficulté croissante)
-7. Présente la proposition à l'humain et attend sa validation
+Pour identifier la prochaine tâche : exécuter `skills/next-task.md`.
 
-**L'agent ne continue pas tant que l'humain n'a pas validé la tâche.**
+### Routing par phase
 
----
+Chaque tâche dans `roadmap.md` a un pipeline (`Explo→Plan→Impl→Review`). Déléguer au skill de la phase courante :
 
-### PHASE 2 — Classification et routage
-
-Une fois la tâche validée, marquer son statut `[ en cours ]` et son agent dans `roadmap.md`.
-
-Mettre à jour le fichier de session (cf. §Session state) : Phase → 2, catégorie et contraintes actives selon le type de tâche.
-
-Router selon la catégorie de la tâche :
-
-| Catégorie | Protocole |
+| Phase courante | Skill à exécuter |
 |---|---|
-| `Dev` | Phase 2b (si M+) → Phases 3 → 4 → 5 → unit-tests → 6 → 7 |
-| `Design` | Phase 2b (si M+) → Figma. Si tokens ou composants mis à jour : exécuter `figma-sync.md`. Pas de phase 3-5. |
-| `Infra` | Phase 2b (si M+) → Phase 3 → implémentation directe → Phase 6 → 7 |
-| `Data` | Phase 2b (si M+) → Phase 3 → modification schéma → Phase 6 → 7 |
-| `Produit` | Phase 2b (si M+) → Présenter les options à l'humain. Décision humaine → exécuter `update-system.md`. Pas de code. |
+| Exploration | `skills/phase-exploration.md` |
+| Planification | `skills/phase-plan.md` |
+| Implémentation | `skills/phase-implementation.md` |
+| Review | `skills/phase-review.md` |
 
----
+Si M+ : exécuter `skills/product-challenge.md` avant la phase Planification.
+Si UI/composant touché : exécuter `skills/design-audit.md` avant l'implémentation.
+Si tâche Design seule : Figma → `figma-sync.md` si tokens/composants/flows → clôture.
 
-### PHASE 2b — Product challenge (M+ uniquement)
+### Clôture
 
-Exécuter `skills/product-challenge.md`.
-
-Ce skill :
-1. Analyse la tâche et identifie hypothèses implicites, edge cases et décisions de design ouvertes
-2. Pose les questions **une par une** via `AskUserQuestion`, avec des propositions concrètes à choisir — attend la réponse humaine à chaque question
-3. Écrit les conclusions dans le fichier de session (cf. §Session state) avant de continuer
-
-**L'agent ne passe pas en Phase 3 tant que l'humain n'a pas répondu au challenge.**
-
----
-
-### PHASE 3 — Planification (selon difficulté)
-
-Mettre à jour le fichier de session (cf. §Session state) : Phase → 3.
-
-#### Étape 3a — Vérification delta Figma ↔ Specs
-
-Avant de planifier, croiser les informations disponibles :
-- La spec de la feature (dossier de specs défini dans `system/governance.md`)
-- Le flow correspondant dans `design-system/flows/` (état Figma synchronisé)
-- Les composants dans `design-system/components/` (état Figma synchronisé)
-
-**Figma est la source de vérité.** Les specs sont un contexte de départ, pas une référence finale.
-
-Si un écart est détecté entre Figma et les specs (fonctionnalité présente dans les specs mais absente de Figma, comportement différent, composant non représenté, etc.) :
-
-```
-⚠️ Delta Figma ↔ Specs détecté
-Feature          : [nom de la feature]
-Écart            : [description précise de la différence]
-Dans les specs   : [ce que disent les specs]
-Dans Figma       : [ce que montrent les fichiers design-system/]
-Question         : Quelle version fait référence ?
-```
-
-Lister tous les écarts détectés avant de poser les questions. **Ne pas trancher seul.** Attendre la décision humaine pour chaque écart avant de continuer.
-
-Si Figma n'a pas encore été designé pour cette feature (fichiers `design-system/flows/` ou `design-system/components/` absents ou vides) : le signaler à l'humain et attendre qu'il confirme si on peut se baser sur les specs en attendant le design Figma.
-
-#### Étape 3b — Évaluation des librairies publiques
-
-Avant de planifier, évaluer s'il existe des librairies publiques pertinentes pour la feature en cours.
-
-Règles :
-- Ne proposer une lib que si elle apporte une valeur claire (gain de temps significatif, cas complexe bien couvert, maintenue activement).
-- Toujours vérifier : licence gratuite, compatibilité avec la stack du projet, activité récente du repo.
-- Ne jamais installer une lib sans validation humaine explicite.
-- Si plusieurs options existent, présenter un comparatif court (2-3 lignes par option max) et recommander.
-- Si aucune lib ne justifie son ajout, ne rien proposer — l'implémentation native reste la valeur par défaut.
-
-Format de proposition :
-```
-Lib envisagée : [nom] — [url]
-Apport        : [ce qu'elle résout concrètement]
-Alternative   : implémentation native (~[estimation effort])
-Recommandation : [lib ou natif] — [raison courte]
-```
-
-#### Étape 3c — Plan d'implémentation
-
-Une fois les écarts résolus et les libs évaluées :
-
-| Difficulté | Action |
-|---|---|
-| `XS` ou `S` | Pas de plan. Implémenter directement. |
-| `M` | Proposer un plan en 3-5 étapes. Attendre validation humaine avant d'implémenter. |
-| `L` ou `XL` | Proposer un plan détaillé avec sous-étapes, fichiers impactés, risques identifiés. Attendre validation humaine. |
-
-Pour construire le plan, consulter :
-- `design-system/component-catalog.md`
-- `design-system/flows-catalog.md`
-- `system/tokens.md`
-- `system/memory.md` (décisions passées pertinentes)
-
----
-
-### PHASE 4 — Audit design (tâches Dev uniquement)
-
-Mettre à jour le fichier de session (cf. §Session state) : Phase → 4.
-
-Avant d'implémenter, exécuter `skills/design-audit.md`.
-
-Ce skill détermine :
-- Quels composants existants utiliser ou étendre
-- Quels tokens utiliser pour chaque valeur visuelle
-- Si un composant ou token manque : bloquer et notifier l'humain
-
-**L'implémentation ne commence pas tant que les deux questions ne sont pas résolues.**
-
----
-
-### PHASE 5 — Implémentation
-
-Mettre à jour le fichier de session (cf. §Session state) : Phase → 5. Si des décisions sont en attente de validation humaine, les noter dans le champ **Décisions en attente**.
-
-Implémenter selon le plan validé (ou directement si XS/S).
-
-Règles pendant l'implémentation :
-- Respecter toutes les conventions de `system/governance.md`
-- Ne jamais hardcoder de valeur visuelle
-- Ne jamais créer un composant sans avoir exécuté `design-audit.md`
-- Si une décision d'implémentation locale est prise (sans impact sur les fichiers système), la noter en commentaire court dans le code
-- Si une décision à impact long terme émerge : stopper, proposer à l'humain, attendre validation, puis exécuter `update-system.md`
-
-Une fois l'implémentation terminée, exécuter `skills/unit-tests.md`.
-
-**L'agent ne passe pas en Phase 6 tant que tous les tests unitaires ne sont pas au vert.**
-
----
-
-### PHASE 6 — Compliance
-
-Mettre à jour le fichier de session (cf. §Session state) : Phase → 6.
-
-Exécuter `skills/compliance.md`.
-
-Ce skill produit un rapport dans le chat couvrant :
-- Conformité aux specs
-- Conformité aux tokens (`system/tokens.md`)
-- Conformité à la gouvernance (`system/governance.md`)
-- Absence de composants hardcodés ou dupliqués
-- Écarts détectés et leur sévérité
-
-Après le rapport, proposer à l'humain une **liste de tests manuels** à effectuer sur l'implémentation.
-
-**L'agent attend la validation humaine du rapport et des tests avant de continuer.**
-
----
-
-### PHASE 7 — Clôture
-
-Une fois le compliance validé et les tests manuels effectués par l'humain :
-
-1. Exécuter `skills/commit-protocol.md`
-2. Mettre à jour `roadmap.md` : statut → `[ fait ]`, agent → nom de l'agent
-3. Mettre à jour `system/memory.md` si des décisions ou trade-offs significatifs ont été faits pendant la session
-4. Supprimer le fichier de session de cette session (`system/.session-state/<id>.md`)
-5. Signaler à l'humain que la session est terminée et que la tâche est clôturée
+Exécutée par `skills/phase-review.md` → `skills/commit-protocol.md`. Après commit :
+1. Évaluer `system/memory.md` (cf. commit-protocol Étape 7).
+2. Supprimer le fichier de session.
 
 ---
 
 ## Règles transversales
 
-- **Jamais de décision seul** : toute décision produit, architecture ou gouvernance est proposée à l'humain avec une recommandation. L'agent attend la validation.
-- **Jamais d'écriture non autorisée** : toujours vérifier `access-control.md` avant d'écrire dans un fichier système.
-- **Jamais de valeur hardcodée** : toute valeur visuelle vient de `system/tokens.md`.
-- **Jamais de composant créé sans audit** : toujours passer par `design-audit.md`.
-- **Jamais de commit sans compliance validé** : le commit ne se fait qu'après validation humaine explicite.
-- **Pas d'imbrication** : les skills ne s'appellent pas entre eux. Toute orchestration multi-skill remonte ici.
+- Jamais de décision seul : produit, architecture, gouvernance → validation humaine.
+- Jamais d'écriture non autorisée : vérifier `access-control.md`.
+- Jamais de valeur visuelle hardcodée.
+- Jamais de composant créé sans audit applicable.
+- Jamais de commit sans compliance validé.
+- Pas d'imbrication : les skills ne s'appellent jamais entre eux.

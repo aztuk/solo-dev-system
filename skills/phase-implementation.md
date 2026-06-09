@@ -18,7 +18,9 @@ Selon roadmap.
 
 ### Étape 1 — Guardrails
 
-Exécuter `skills/implementation-guardrails.md` avant toute écriture de code.
+Vérifier que `AGENTS.md` a exécuté `skills/implementation-guardrails.md` avant toute écriture de code si l'implémentation touche du code exécutable.
+
+Si les guardrails requis n'ont pas été exécutés : arrêter et rendre la main à `AGENTS.md`.
 
 ### Étape 2 — Implémentation
 
@@ -26,9 +28,12 @@ Implémenter selon le plan validé. Ne pas dévier sans demander à l'humain.
 
 Règles de responsabilité fichier :
 - Un fichier = une responsabilité
-- Taille cible : < 300 lignes par fichier
-- Si un fichier dépasse 300 lignes : vérifier si une extraction est justifiée
-- Ne pas extraire uniquement pour réduire la taille
+- Préférer 10 fichiers cohérents de 30 lignes à 1 fichier omnibus de 300 lignes
+- Taille cible d'un nouveau fichier : 30 à 80 lignes
+- Si un fichier dépasse 150 lignes : justifier que sa responsabilité reste unique
+- Si un fichier dépasse 250 lignes : extraire avant d'ajouter de la logique, sauf validation humaine
+- Extraire dès que deux responsabilités évoluent séparément
+- Ne pas créer de fichier fourre-tout (`utils`, `helpers`, `common`) sans thème précis
 
 ### Étape 3 — Vérification composants
 
@@ -45,5 +50,5 @@ Passer la phase de `Implémentation` à `Review` dans `roadmap.md`.
 Afficher :
 ```
 Implémentation terminée.
-Prochaine phase : Review — exécuter skills/phase-review.md
+Prochaine phase : Review — afficher le menu Review à la carte
 ```

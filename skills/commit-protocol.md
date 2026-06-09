@@ -2,11 +2,11 @@
 
 ## Déclencheur
 
-Exécuté par AGENTS.md uniquement après :
-1. Tous les audits compliance sont `PASSÉ`
-2. L'humain a confirmé que les tests manuels sont passés
+Exécuté par AGENTS.md uniquement quand l'option `5 Commit` de la Review à la carte est sélectionnée.
 
-Ne jamais committer sans ces deux conditions remplies.
+Ne jamais committer sans compliance validée (`PASSÉ`) dans la review courante ou explicitement confirmée par l'humain.
+
+Les tests unitaires et tests manuels sont pris en compte s'ils ont été sélectionnés ou demandés pendant la review. Ne pas les lancer implicitement.
 
 ---
 
@@ -37,9 +37,15 @@ Format obligatoire (Conventional Commits) :
 
 ```
 [type]([scope]): [description courte en français]
-
-[corps optionnel — contexte ou décisions notables]
 ```
+
+Limite obligatoire : 20 mots maximum pour tout le message de commit.
+
+Règles :
+- Message sur une seule ligne.
+- Pas de corps de commit, sauf demande humaine explicite.
+- Description courte, concrète, sans justification ni résumé détaillé.
+- Si le message proposé dépasse 20 mots : le raccourcir avant validation humaine.
 
 Types :
 - `feat` — nouvelle feature ou fonctionnalité
@@ -71,9 +77,9 @@ Si la session était une exception urgente hors roadmap : ajouter la tâche dans
 
 ---
 
-### Étape 6 — Synchronisation TODO → roadmap.md
+### Étape 6 — Handoff synchronisation TODO → roadmap.md
 
-Exécuter `skills/sync-todo.md` après le commit.
+Ne pas exécuter `skills/sync-todo.md` depuis ce skill. Rendre la main à AGENTS.md, qui orchestre `skills/sync-todo.md` après commit.
 
 ---
 

@@ -29,6 +29,14 @@ Format d'une entrée :
 
 ## Log
 
+## 2026-06-07 — Grill-me avant Exploration
+
+**Contexte** : l'humain a testé la phase Exploration sur un autre projet et l'a trouvée trop checklistée ; il veut intégrer un vrai comportement `grill-me.md`, connu dans l'écosystème des agent skills, puis propager le système vers `SpaceExploration`.
+**Décision** : créer `skills/grill-me.md` comme skill autonome d'interview, l'orchestrer dans `AGENTS.md` avant `skills/phase-exploration.md`, et recentrer `phase-exploration.md` sur la consolidation du handoff et la rédaction de `exploration.md`.
+**Alternatives écartées** : laisser l'interview codée directement dans `phase-exploration.md`, rejeté car trop rigide ; faire appeler `grill-me.md` par `phase-exploration.md`, rejeté pour respecter la règle "les skills ne s'appellent jamais entre eux".
+**Impact** : `AGENTS.md`, `skills/grill-me.md`, `skills/phase-exploration.md`, `system/memory.md`. La même modification a été appliquée dans `SpaceExploration` pour garder les protocoles symétriques.
+**Décidé par** : Humain, avec exécution Codex.
+
 ## 2026-06-06 — Rapport de contexte en fin de session
 
 **Contexte** : l'humain veut voir, en fin de session, où le contexte/tokens a été le plus consommé : moment, fichiers, skills et actions.

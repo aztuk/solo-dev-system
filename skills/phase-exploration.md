@@ -6,7 +6,7 @@ Phase Exploration d'une tâche (sélectionnée via `next-task.md` ou demande exp
 
 ## Contexte chargé
 
-Rien — session fraîche. Ne pas lire d'artefact de tâche avant l'interview.
+Le handoff produit par `skills/grill-me.md` doit être présent dans le contexte courant. Ne pas relancer l'interview complète ici : cette phase consolide, vérifie les derniers trous bloquants et rédige l'artefact.
 
 ## Modèle recommandé
 
@@ -16,26 +16,31 @@ Rien — session fraîche. Ne pas lire d'artefact de tâche avant l'interview.
 
 ## Comportement
 
-### Étape 1 — Grill-me
+### Étape 1 — Vérification du handoff
 
-Interviewer l'humain de façon systématique. Pour chaque aspect, fournir une recommandation, attendre la réponse avant de passer au suivant.
+Vérifier que le contexte contient un `Grill handoff` suffisant pour rédiger l'exploration :
+- intent ;
+- contraintes ;
+- décisions clés ;
+- hypothèses surfacées ;
+- alternatives écartées ;
+- hors scope ;
+- questions ouvertes.
 
-Questions à couvrir dans l'ordre :
-1. Quel est le problème exact (pas la solution) ?
-2. Qui est impacté, dans quel contexte ?
-3. Quelles contraintes techniques connues ?
-4. Qu'est-ce qui a déjà été essayé ?
-5. Quels sont les edge cases évidents ?
+Si le handoff est absent ou insuffisant, ne pas appeler un autre skill depuis cette phase. Rendre la main à AGENTS.md avec :
 
-Si une question peut être résolue en explorant la codebase : explorer plutôt que demander.
+```markdown
+Exploration bloquée : `skills/grill-me.md` doit être exécuté avant `skills/phase-exploration.md`.
+Point manquant : [intent / contraintes / décisions / hypothèses / alternatives / hors scope / questions ouvertes]
+```
 
 ### Étape 2 — Exploration codebase (si nécessaire)
 
 Utiliser Glob/Grep/Read pour répondre aux questions techniques. Logger chaque lecture dans le context usage log du session-state.
 
-### Étape 3 — Validation de l'interview
+### Étape 3 — Validation de l'exploration
 
-Demander à l'humain si l'interview est complète avant de rédiger.
+Si des questions ouvertes bloquent la recommandation, poser uniquement ces questions résiduelles. Sinon, demander une validation courte du handoff avant de rédiger.
 
 ### Étape 4 — Rédaction exploration.md
 

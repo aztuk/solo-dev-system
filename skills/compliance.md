@@ -2,10 +2,11 @@
 
 ## Déclencheur
 
-Exécuté par AGENTS.md après chaque implémentation, avant tout commit.
+Option 1 de la Review à la carte, ou audit de compliance demandé explicitement par AGENTS.md avant commit.
 
 AGENTS.md choisit le mode :
 - `lite` pour XS/S, docs, protocole, config isolée, correction sans UI/data.
+- `design-system` pour l'option 1 de la Review à la carte.
 - `full` pour M+, feature utilisateur, UI significative, data, sécurité, architecture.
 
 ---
@@ -37,6 +38,19 @@ Audit court pour réduire la consommation de tokens. Périmètre :
 5. Tests unitaires : `PASSÉ`, `N/A` ou blocage documenté.
 
 Ne pas relire les specs, tokens, catalogues design ou fichiers Figma si la tâche ne les touche pas.
+
+### Mode design-system
+
+Audit ciblé pour l'option `1 Compliance design system` de la Review à la carte. Périmètre :
+
+1. Fichiers modifiés pendant la session.
+2. Respect de `system/access-control.md`.
+3. Aucune valeur visuelle hardcodée dans les fichiers modifiés.
+4. Toute valeur visuelle provient de `system/tokens.md`.
+5. Tout composant créé ou modifié est couvert par `design-system/component-catalog.md` et, si nouveau, par `design-system/components/*.md`.
+6. Aucun composant existant n'est dupliqué.
+
+Ne pas exécuter de tests unitaires dans ce mode.
 
 ### Mode full
 
@@ -133,6 +147,20 @@ Access-control        : PASSÉ / [écarts]
 Gouvernance           : PASSÉ / [écarts]
 Secrets               : PASSÉ / [écarts]
 Tests                 : PASSÉ / N/A / [écarts]
+
+Résultat : PRÊT POUR COMMIT / BLOQUÉ ([n] écart(s))
+```
+
+Pour le mode design-system, utiliser ce format :
+
+```
+Compliance design system — [nom de la tâche] — [date]
+
+Fichiers modifiés : [liste]
+Access-control    : PASSÉ / [écarts]
+Tokens            : PASSÉ / N/A / [écarts]
+Composants        : PASSÉ / N/A / [écarts]
+Duplication UI    : PASSÉ / N/A / [écarts]
 
 Résultat : PRÊT POUR COMMIT / BLOQUÉ ([n] écart(s))
 ```

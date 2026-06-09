@@ -14,7 +14,8 @@ Ne pas exécuter pour : consultation, documentation seule, protocole seul, fichi
 
 Empêcher les dérives fréquentes pendant l'implémentation :
 - duplication de fonctions, composants, hooks ou logique métier ;
-- création excessive de fichiers ;
+- création excessive de fichiers sans responsabilité claire ;
+- concentration excessive dans un fichier omnibus ;
 - fichiers qui grossissent sans plan de refactor ;
 - nouvelles abstractions non justifiées ;
 - chemins parallèles conservés après remplacement.
@@ -66,19 +67,20 @@ File budget :
 ```
 
 Règles :
-- XS/S : éviter les nouveaux fichiers sauf nécessité claire.
+- XS/S : les nouveaux fichiers sont acceptés si chaque fichier porte une responsabilité claire.
 - M+ : annoncer les nouveaux fichiers dans le plan validé.
 - Ne pas créer un fichier pour une abstraction utilisée une seule fois, sauf contrainte locale explicite.
 - Ne pas concentrer toute la logique dans un fichier déjà trop long pour éviter de créer un fichier.
+- Préférer plusieurs petits fichiers cohérents à un fichier qui mélange plusieurs responsabilités.
 
 ### 4. Contrôler la taille des fichiers
 
 Avant et après modification, vérifier la taille des fichiers de code touchés.
 
 Seuils :
-- `<= 250` lignes : acceptable.
-- `251-400` lignes : continuer seulement si la modification reste locale et le rapport mentionne la dette.
-- `> 400` lignes : stopper avant d'ajouter de la logique, sauf validation humaine ou refactor inclus dans la tâche.
+- `<= 150` lignes : acceptable si la responsabilité est unique.
+- `151-250` lignes : continuer seulement si la responsabilité reste unique et le rapport justifie l'absence d'extraction.
+- `> 250` lignes : stopper avant d'ajouter de la logique, sauf validation humaine ou refactor inclus dans la tâche.
 
 Ces seuils sont des garde-fous, pas une invitation à découper artificiellement.
 

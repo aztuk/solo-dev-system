@@ -35,7 +35,7 @@ Format défini dans `skills/session-start.md`. Ne relire les fichiers complets q
 
 - Ne jamais lancer de serveur de développement sauf demande explicite.
 - Ne jamais prendre de screenshots sauf demande explicite.
-- Après implémentation : exécuter `skills/unit-tests.md` si du code exécutable a changé.
+- En Review : exécuter `skills/unit-tests.md` uniquement si l'option `2` est sélectionnée.
 - Si vérification visuelle utile : proposer comme test manuel en Phase 6.
 
 ---
@@ -46,18 +46,20 @@ Format défini dans `skills/session-start.md`. Ne relire les fichiers complets q
 |---|---|
 | `skills/session-start.md` | Début de session |
 | `skills/next-task.md` | "Prochaine tâche de la stack" ou équivalent |
-| `skills/sync-todo.md` | Déclenché uniquement par `commit-protocol.md` |
+| `skills/sync-todo.md` | Après commit, orchestré par AGENTS.md |
+| `skills/grill-me.md` | Avant la Phase Exploration ; ou demande explicite de clarification/stress-test |
 | `skills/phase-exploration.md` | Phase Exploration d'une tâche |
 | `skills/phase-plan.md` | Phase Planification d'une tâche |
 | `skills/phase-implementation.md` | Phase Implémentation d'une tâche |
-| `skills/phase-review.md` | Phase Review d'une tâche |
+| `skills/phase-review.md` | Option 3 de la Review : diff review |
+| `skills/review-responsibilities.md` | Option 4 de la Review : responsabilités découpées |
 | `skills/product-challenge.md` | Pour toute tâche M+ (Dev, Design, Produit) |
 | `skills/design-audit.md` | Avant toute création ou modification de composant ou valeur visuelle |
-| `skills/implementation-guardrails.md` | Avant tout code, exécuté par `phase-implementation.md` |
-| `skills/unit-tests.md` | Après implémentation de code exécutable, exécuté par `phase-review.md` |
-| `skills/compliance.md` | Après tests unitaires, exécuté par `phase-review.md` |
+| `skills/implementation-guardrails.md` | Avant tout code, orchestré par AGENTS.md |
+| `skills/unit-tests.md` | Option 2 de la Review : tests unitaires |
+| `skills/compliance.md` | Option 1 de la Review : compliance design system |
 | `skills/figma-sync.md` | Après mise à jour de la page Tokens, composants ou flows dans Figma |
-| `skills/commit-protocol.md` | Après validation humaine du compliance et des tests manuels |
+| `skills/commit-protocol.md` | Option 5 de la Review : commit |
 | `skills/update-system.md` | Après décision humaine à impact long terme |
 | `skills/create-skill.md` | Quand une décision humaine implique un nouveau skill |
 
@@ -107,20 +109,50 @@ Chaque tâche dans `roadmap.md` a un pipeline (`Explo→Plan→Impl→Review`). 
 
 | Phase courante | Skill à exécuter |
 |---|---|
-| Exploration | `skills/phase-exploration.md` |
+| Exploration | `skills/grill-me.md`, puis `skills/phase-exploration.md` |
 | Planification | `skills/phase-plan.md` |
-| Implémentation | `skills/phase-implementation.md` |
-| Review | `skills/phase-review.md` |
+| Implémentation | `skills/implementation-guardrails.md` si code touché, puis `skills/phase-implementation.md` |
+| Review | Menu Review à la carte, puis options sélectionnées |
+
+Le handoff produit par `skills/grill-me.md` reste dans le contexte courant et sert d'entrée à `skills/phase-exploration.md`. Aucun skill ne délègue à un autre skill : cet enchaînement est orchestré uniquement par AGENTS.md.
 
 Si M+ : exécuter `skills/product-challenge.md` avant la phase Planification.
 Si UI/composant touché : exécuter `skills/design-audit.md` avant l'implémentation.
 Si tâche Design seule : Figma → `figma-sync.md` si tokens/composants/flows → clôture.
 
+### Review à la carte
+
+Au démarrage de la phase Review, afficher :
+
+```
+Review à la carte — sélectionne les checks à lancer :
+1 Compliance design system
+2 Tests unitaires
+3 Diff review
+4 Responsabilités découpées
+5 Commit
+
+Réponse attendue : chiffres sans séparateur, ex. 135.
+```
+
+Attendre la réponse humaine. Exécuter uniquement les options sélectionnées, dans l'ordre numérique :
+
+| Option | Action orchestrée par AGENTS.md |
+|---|---|
+| 1 | Exécuter `skills/compliance.md` en mode `design-system` |
+| 2 | Exécuter `skills/unit-tests.md` |
+| 3 | Exécuter `skills/phase-review.md` |
+| 4 | Exécuter `skills/review-responsibilities.md` |
+| 5 | Exécuter `skills/commit-protocol.md` |
+
+Ne jamais lancer une option non sélectionnée. Si `5` est sélectionné, `commit-protocol.md` vérifie ses propres prérequis avant commit.
+
 ### Clôture
 
-Exécutée par `skills/phase-review.md` → `skills/commit-protocol.md`. Après commit :
-1. Évaluer `system/memory.md` (cf. commit-protocol Étape 7).
-2. Supprimer le fichier de session.
+Exécutée par `skills/commit-protocol.md` si l'option `5` a été sélectionnée et validée. Après commit :
+1. Exécuter `skills/sync-todo.md`.
+2. Évaluer `system/memory.md` (cf. commit-protocol Étape 7).
+3. Supprimer le fichier de session.
 
 ---
 

@@ -31,11 +31,12 @@ Référence pour le spawning de subagents et le routing de modèle.
 - **Contexte chargé** : `tasks/<slug>/plan.md` uniquement
 
 ### Review
-- **Rôle** : relecture du diff, détection de bugs et simplifications
+- **Rôle** : review à la carte sélectionnée par l'humain
 - **Outils** : lecture seule + git diff
 - **Modèle** : `mid`
 - **Contexte chargé** : diff git uniquement
-- **Sortie** : `tasks/<slug>/review.md` (~50 lignes max)
+- **Options** : compliance design system, tests unitaires, diff review, responsabilités découpées, commit
+- **Sortie** : selon options sélectionnées ; `tasks/<slug>/review.md` seulement pour la diff review
 
 ## Règle de distillation
 

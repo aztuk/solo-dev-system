@@ -2,7 +2,7 @@
 
 ## Déclencheur
 
-Déclenché uniquement par `skills/commit-protocol.md`. Jamais déclenché directement par un agent ou une demande humaine.
+Déclenché uniquement par AGENTS.md après un commit validé. Jamais déclenché directement par une demande humaine.
 
 ---
 

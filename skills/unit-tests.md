@@ -2,7 +2,7 @@
 
 ## Déclencheur
 
-Exécuté par AGENTS.md après chaque implémentation de code exécutable (Phase 5), avant le compliance (Phase 6).
+Option 2 de la Review à la carte, exécutée par AGENTS.md uniquement si l'humain sélectionne `2`.
 
 Si seuls des fichiers de documentation, protocole, gouvernance ou orchestration Markdown ont changé, les tests unitaires sont `N/A`. L'agent le signale dans le chat et passe au compliance.
 

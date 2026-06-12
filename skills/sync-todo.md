@@ -16,7 +16,9 @@ Lire `TODO.md`. Si aucune entrée (fichier vide ou uniquement des commentaires),
 
 Pour chaque entrée dans `TODO.md` :
 
-1. Déduire une description courte (1 ligne)
+1. Copier la description de la tâche depuis `TODO.md` littéralement, sans résumé, simplification, reformulation, correction stylistique ni perte de détails.
+   - Si l'entrée contient plusieurs lignes, conserver le contenu complet de la description.
+   - Ne normaliser que le minimum nécessaire au format `roadmap.md` (ex. échapper les caractères qui casseraient le tableau Markdown), sans changer le sens ni retirer d'information.
 2. Déduire le pipeline adapté :
    - Correction évidente, XS → `Impl`
    - Tâche définie, petite → `Plan→Impl`
@@ -37,6 +39,8 @@ Format de chaque ligne :
 ```
 | à faire | [description] | [pipeline] | [modèle] | [priorité] | — |
 ```
+
+`[description]` doit contenir la description copiée depuis `TODO.md` selon l'Étape 2. Elle ne doit pas être raccourcie pour tenir sur une ligne.
 
 ### Étape 4 — Vider TODO
 

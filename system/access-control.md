@@ -84,10 +84,6 @@ Toute modification de ce fichier passe par le skill `update-system.md`.
 | Fichier | Lecture | Écriture autorisée | Point d'entrée |
 |---|---|---|---|
 | `system/agent-patterns.md` | Tout agent | `update-system.md` | Décision humaine validée |
-| `plans/*.md` | Tout agent | Humain ou agent planification système | Décision de refonte |
-
----
-
 ## Fichiers de code applicatif
 
 | Fichier | Lecture | Écriture autorisée | Point d'entrée |

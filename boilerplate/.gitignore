@@ -1,0 +1,5 @@
+AgenticSystem/
+system/.session-state/
+.env
+.env.local
+node_modules/

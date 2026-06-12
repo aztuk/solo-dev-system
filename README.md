@@ -140,11 +140,42 @@ scripts/
 
 ---
 
-## Installer dans un projet
+## Creer un nouveau projet
 
-1. Copier les fichiers du template dans le projet cible.
-2. Renseigner `system/governance.md` : stack, conventions, scope.
-3. Adapter `system/access-control.md` aux dossiers reels du projet.
-4. Remplir ou synchroniser `system/tokens.md`.
-5. Ajouter les premieres demandes dans `TODO.md`.
-6. Demander a l'agent : "prochaine tache de la stack".
+AgenticSystem s'utilise comme submodule Git dans vos projets. Le skill `create-project` orchestre la creation complete.
+
+### Via Claude Code (recommande)
+
+Dans une session Claude Code pointant sur ce depot, taper :
+
+```
+cree un projet
+```
+
+L'agent demande le nom (slug kebab-case) et le chemin parent, puis :
+
+1. Initialise un depot Git vide dans `<chemin>/<nom>/`
+2. Ajoute AgenticSystem comme submodule dans `AgenticSystem/`
+3. Cree les dossiers `tasks/`, `system/`, `design-system/`, `.claude/rules/`
+4. Copie les templates depuis `AgenticSystem/boilerplate/` (CLAUDE.md, roadmap.md, TODO.md, tokens, catalogs)
+5. Commit initial
+
+### Manuellement
+
+```bash
+mkdir mon-projet && cd mon-projet && git init
+git submodule add https://github.com/aztuk/solo-dev-system.git AgenticSystem
+mkdir tasks system design-system && mkdir -p .claude/rules
+# copier les fichiers depuis AgenticSystem/boilerplate/ a la racine
+git add . && git commit -m "chore: init projet avec submodule AgenticSystem"
+```
+
+### Apres creation
+
+Les fichiers systeme (`governance.md`, `access-control.md`, `agent-patterns.md`) restent dans `AgenticSystem/system/` et sont lus par tous les agents depuis le submodule. Seuls les fichiers projet vivent a la racine.
+
+1. Renseigner `system/governance.md` : stack, conventions, scope.
+2. Adapter `system/access-control.md` aux dossiers reels du projet.
+3. Remplir ou synchroniser `system/tokens.md`.
+4. Ajouter les premieres demandes dans `TODO.md`.
+5. Ouvrir le projet dans Claude Code et demander : "prochaine tache".

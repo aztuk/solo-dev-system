@@ -41,7 +41,7 @@ Ne pas créer de nouveaux composants sans avoir vérifié le catalog (normalemen
 
 ### Étape 4 — Décisions imprévues
 
-Si une décision produit ou architecture imprévue apparaît pendant l'implémentation : stopper immédiatement et demander à l'humain. Ne jamais décider seul.
+Si une décision produit ou architecture imprévue apparaît pendant l'implémentation : exécuter `skills/doubt-check.md` d'abord. Escalader à l'humain uniquement si doubt-check conclut que l'escalade est nécessaire. Ne jamais décider seul sans avoir passé doubt-check.
 
 ### Étape 5 — Mise à jour roadmap
 

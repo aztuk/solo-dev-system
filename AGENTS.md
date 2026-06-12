@@ -56,12 +56,15 @@ Format défini dans `skills/session-start.md`. Ne relire les fichiers complets q
 | `skills/product-challenge.md` | Pour toute tâche M+ (Dev, Design, Produit) |
 | `skills/design-audit.md` | Avant toute création ou modification de composant ou valeur visuelle |
 | `skills/implementation-guardrails.md` | Avant tout code, orchestré par AGENTS.md |
+| `skills/doubt-check.md` | Dans phase-implementation, avant escalade humain sur décision imprévue |
+| `skills/debugging.md` | Sur demande explicite quand quelque chose ne fonctionne pas |
 | `skills/unit-tests.md` | Option 2 de la Review : tests unitaires |
 | `skills/compliance.md` | Option 1 de la Review : compliance design system |
 | `skills/figma-sync.md` | Après mise à jour de la page Tokens, composants ou flows dans Figma |
 | `skills/commit-protocol.md` | Option 5 de la Review : commit |
 | `skills/update-system.md` | Après décision humaine à impact long terme |
 | `skills/create-skill.md` | Quand une décision humaine implique un nouveau skill |
+| `skills/create-project.md` | Créer un nouveau repo projet avec AgenticSystem comme submodule |
 
 Pour le spawning de subagents et le routing de modèle : `system/agent-patterns.md`.
 

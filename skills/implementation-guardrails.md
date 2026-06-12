@@ -38,7 +38,11 @@ Implementation guardrails : N/A — aucun code à écrire.
 
 Ne pas continuer le skill.
 
-### 2. Scanner la réutilisation
+### 2. Vérifier la source
+
+Avant d'utiliser une API externe, une lib, ou un framework peu familier : lire la documentation officielle ou le code source. Ne jamais inférer le comportement d'une API depuis son nom ou un usage antérieur mémorisé — les signatures changent.
+
+### 3. Scanner la réutilisation
 
 Avant toute écriture :
 - rechercher les fonctions, composants, hooks, services, types, helpers et modules proches avec `rg` ;
@@ -56,7 +60,7 @@ Reuse scan :
 
 Interdiction : créer une fonction, un composant, un hook, un service ou un helper sans avoir vérifié qu'un équivalent proche n'existe pas déjà.
 
-### 3. Fixer un budget de fichiers
+### 4. Fixer un budget de fichiers
 
 Avant d'écrire, annoncer le budget :
 
@@ -73,7 +77,7 @@ Règles :
 - Ne pas concentrer toute la logique dans un fichier déjà trop long pour éviter de créer un fichier.
 - Préférer plusieurs petits fichiers cohérents à un fichier qui mélange plusieurs responsabilités.
 
-### 4. Contrôler la taille des fichiers
+### 5. Contrôler la taille des fichiers
 
 Avant et après modification, vérifier la taille des fichiers de code touchés.
 
@@ -84,7 +88,7 @@ Seuils :
 
 Ces seuils sont des garde-fous, pas une invitation à découper artificiellement.
 
-### 5. Contrôler la duplication
+### 6. Contrôler la duplication
 
 Pendant l'implémentation :
 - préférer étendre un chemin existant plutôt que créer une variante parallèle ;
@@ -92,12 +96,13 @@ Pendant l'implémentation :
 - ne pas laisser deux implémentations concurrentes d'un même comportement ;
 - ne pas copier-coller un bloc de logique sans extraire ou réutiliser le bon niveau d'abstraction.
 
-### 6. Rapport de sortie
+### 7. Rapport de sortie
 
 Après implémentation, produire dans le chat ou le session-state :
 
 ```
 Implementation guardrails :
+- Source check : PASSÉ / [docs lues]
 - Reuse scan : PASSÉ / [écarts]
 - File budget : PASSÉ / [écarts]
 - File size : PASSÉ / [fichiers à surveiller]

@@ -4,7 +4,13 @@ Le protocole de session complet est défini dans `AGENTS.md`. Ce fichier contien
 
 **Lire `AGENTS.md` en premier. Ce fichier ne remplace pas `AGENTS.md`, il le complète.**
 
-**Quelle que soit la première demande de l'humain, exécuter `skills/session-start.md` avant de répondre ou d'agir — sans exception. Ne relancer `session-start.md` qu'une seule fois par session.**
+**Quelle que soit la première demande de l'humain, exécuter `skills/session-start.md` avant de répondre ou d'agir — sans exception. Ne relancer `skills/session-start.md` qu'une seule fois par session.**
+
+**IMPORTANT : Claude Code suit le routing par phase, pas une distinction "consultation/implementation".**
+- Exécuter uniquement les Étapes 1-2 de `skills/session-start.md` (initialisation + cache minimal)
+- **Ne pas** déterminer un "mode" au démarrage
+- À la place : quand une tâche est donnée (via `skills/next-task.md` ou directive directe), regarder sa phase dans `roadmap.md` et exécuter le skill de cette phase
+- C'est Codex qui orchestre les phases selon le pipeline ; Claude Code suit le même routing
 
 ---
 

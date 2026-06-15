@@ -20,9 +20,7 @@ Si le mode n'est pas évident : `consultation` si aucune écriture, `implementat
 ## Étape 1 — Initialisation session
 
 - Sweep des orphelins : supprimer dans `system/.session-state/` tout fichier `*.md` dont la dernière modification dépasse 24h.
-- Résoudre l'ID de session :
-  - Claude Code / Cursor : utiliser `SESSION_STATE_FILE` si injecté.
-  - Codex : générer un ID unique et retenir `system/.session-state/<id>.md`.
+- Générer un ID de session unique (timestamp + random court) et retenir `system/.session-state/<id>.md`.
 - Ne jamais lire les fichiers de session des autres agents.
 
 Créer le fichier de session :
@@ -32,7 +30,7 @@ Créer le fichier de session :
 
 **Phase session** : consultation / implementation
 **Tâche**         : [nom ou N/A]
-**Phase tâche**   : [Exploration/Planification/Implémentation/Review ou N/A]
+**Phase tâche**   : [Analyse/Implémentation/Review ou N/A]
 **Modèle**        : [low/mid/high ou N/A]
 **Artefact**      : [chemin chargé ou aucun]
 

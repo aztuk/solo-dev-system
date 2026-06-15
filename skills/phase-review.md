@@ -55,6 +55,31 @@ Avant de soumettre, vérifier que le diff ne contient pas ces rationalisations c
 
 Si un de ces patterns est présent : le signaler dans "Bugs détectés" ou "Simplifications possibles", pas l'ignorer.
 
-Soumettre à l'humain. Attendre validation avant de continuer.
+Soumettre à l'humain. Attendre son retour avant de continuer.
 
-Si verdict "À corriger" : arrêter, lister les corrections nécessaires, attendre que l'humain confirme les corrections avant de reprendre.
+### Étape 3 — Traitement du retour humain
+
+Si l'humain signale des problèmes ou demandes de changement, classifier chaque point :
+
+**Correctif immédiat** — appliquer maintenant si toutes ces conditions sont vraies :
+- La modification est petite (< 20 lignes) et clairement bornée.
+- Elle ne touche pas à une décision produit, architecture ou gouvernance.
+- Elle ne crée pas de nouveau fichier ou composant.
+
+**Nouvelle tâche** — créer une entrée dans `TODO.md` si l'une de ces conditions est vraie :
+- La modification dépasse le scope de la tâche courante.
+- Elle implique une décision produit ou architecture.
+- Elle est trop volumineuse pour être traitée en correction inline.
+- Elle touche des fichiers non impactés par la tâche courante.
+
+Afficher le classement avant d'agir :
+
+```markdown
+## Classement des retours
+
+- [retour 1] → Correctif immédiat : [raison]
+- [retour 2] → Nouvelle tâche : [raison]
+...
+```
+
+Attendre confirmation de l'humain sur le classement. Appliquer les correctifs immédiats, puis ajouter les nouvelles tâches dans `TODO.md`.

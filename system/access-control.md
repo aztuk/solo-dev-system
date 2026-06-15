@@ -73,8 +73,8 @@ Toute modification de ce fichier passe par le skill `update-system.md`.
 
 | Fichier | Lecture | Écriture autorisée | Point d'entrée |
 |---|---|---|---|
-| `tasks/<slug>/exploration.md` | Tout agent | Agent en session Exploration | Phase Exploration validée |
-| `tasks/<slug>/plan.md` | Tout agent | Agent en session Planification | Validation humaine du plan |
+| `tasks/<slug>/exploration.md` | Tout agent | Agent en session Analyse | Phase Analyse en cours |
+| `tasks/<slug>/plan.md` | Tout agent | Agent en session Analyse | Validation humaine du plan |
 | `tasks/<slug>/review.md` | Tout agent | Agent en session Review | Phase Review validée |
 
 ---

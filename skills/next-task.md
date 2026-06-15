@@ -15,7 +15,7 @@ Lire `TODO.md`. Si des entrées non commentées sont présentes, exécuter `skil
 ### Étape 2 — Lecture roadmap
 
 Lire `roadmap.md`. Identifier :
-- Les tâches avec une phase active (`Exploration`, `Planification`, `Implémentation`, `Review`)
+- Les tâches avec une phase active (`Analyse`, `Implémentation`, `Review`)
 - Les tâches `à faire`
 
 ### Étape 3 — Présentation des choix
@@ -24,11 +24,11 @@ Afficher :
 
 ```
 Tâches en cours :
-  [Phase / Modèle] Nom de la tâche (Priorité) — dossier
+  T-NNN [Phase / Modèle] Nom de la tâche (Priorité) — dossier
   ...
 
 Tâches à démarrer :
-  [Priorité] Nom — pipeline: X / modèle: Y
+  T-NNN [Priorité] Nom — pipeline: X / modèle: Y
   ...
 ```
 
@@ -43,8 +43,7 @@ Après sélection :
 
 | Phase à exécuter | Artefact à charger |
 |---|---|
-| Exploration | aucun |
-| Planification | `tasks/<slug>/exploration.md` |
+| Analyse | aucun |
 | Implémentation | `tasks/<slug>/plan.md` |
 | Review | diff git uniquement |
 

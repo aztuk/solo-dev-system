@@ -42,18 +42,17 @@ Les nouvelles demandes entrent d'abord dans `TODO.md`. La synchronisation vers `
 Une tache peut suivre le pipeline :
 
 ```text
-Exploration -> Planification -> Implementation -> Review
+Analyse -> Implementation -> Review
 ```
 
 | Phase | Skill |
 |---|---|
 | Choisir la prochaine tache | `skills/next-task.md` |
-| Exploration | `skills/phase-exploration.md` |
-| Planification | `skills/phase-plan.md` |
+| Analyse (exploration + plan) | `skills/grill-me.md`, puis `skills/phase-analyse.md` |
 | Implementation | `skills/phase-implementation.md` |
 | Review | `skills/phase-review.md` |
 
-Pour les taches M+, `skills/product-challenge.md` intervient avant la planification. Pour les changements UI ou design system, `skills/design-audit.md` verifie les composants et tokens avant implementation.
+Pour les taches M+, `skills/product-challenge.md` intervient avant la phase Analyse. Pour les changements UI ou design system, `skills/design-audit.md` verifie les composants et tokens avant implementation.
 
 ---
 
@@ -94,8 +93,7 @@ skills/
   session-start.md                Initialisation de session
   next-task.md                    Selection de tache
   sync-todo.md                    Synchronisation TODO -> roadmap
-  phase-exploration.md            Exploration structuree
-  phase-plan.md                   Planification
+  phase-analyse.md                Analyse (exploration + plan combines)
   phase-implementation.md         Implementation
   phase-review.md                 Review, tests, compliance, commit
   implementation-guardrails.md    Verifications avant code
@@ -121,7 +119,6 @@ design-system/
   flows/
 
 scripts/
-  session-state-hook.ps1
   session-state-cursor.ps1
   session-state-sweep.ps1
   migrate-to-project.ps1

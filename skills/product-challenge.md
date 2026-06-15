@@ -61,4 +61,4 @@ Une fois la reponse recue, mettre a jour le fichier de session de cette session 
 
 Ces conclusions servent de contexte pour toute la suite de la session.
 
-Puis continuer vers Phase 3 — Planification.
+Puis continuer vers la Phase Analyse.

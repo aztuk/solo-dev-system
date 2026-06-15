@@ -6,8 +6,8 @@ Référence pour le spawning de subagents et le routing de modèle.
 
 | Valeur roadmap | Modèle Claude | Quand |
 |---|---|---|
-| `low` | claude-haiku-4-5 | Exploration, recherche codebase, tâches XS |
-| `mid` | claude-sonnet-4-6 | Planification, Implémentation standard, Review |
+| `low` | claude-haiku-4-5 | Interview Grill, recherche codebase, tâches XS |
+| `mid` | claude-sonnet-4-6 | Analyse, Implémentation standard, Review |
 | `high` | claude-opus-4-8 | Implémentation L/XL, débogage complexe |
 
 ## Patterns de subagents
@@ -42,8 +42,7 @@ Référence pour le spawning de subagents et le routing de modèle.
 
 | Phase en cours | Fichier chargé | Fichiers exclus |
 |---|---|---|
-| Exploration | rien (session fraîche) | tout |
-| Planification | `exploration.md` uniquement | roadmap, autres tâches |
+| Analyse | rien (session fraîche) | tout |
 | Implémentation | `plan.md` uniquement | `exploration.md`, roadmap |
 | Review | diff git uniquement | `plan.md`, `exploration.md` |
 

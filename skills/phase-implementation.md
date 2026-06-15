@@ -37,13 +37,34 @@ Règles de responsabilité fichier :
 
 ### Étape 3 — Vérification composants
 
-Ne pas créer de nouveaux composants sans avoir vérifié le catalog (normalement déjà fait en Planification). Si un composant manquant est découvert : stopper et demander à l'humain.
+Ne pas créer de nouveaux composants sans avoir vérifié le catalog (normalement déjà fait en Analyse). Si un composant manquant est découvert : stopper et demander à l'humain.
 
 ### Étape 4 — Décisions imprévues
 
 Si une décision produit ou architecture imprévue apparaît pendant l'implémentation : exécuter `skills/doubt-check.md` d'abord. Escalader à l'humain uniquement si doubt-check conclut que l'escalade est nécessaire. Ne jamais décider seul sans avoir passé doubt-check.
 
-### Étape 5 — Mise à jour roadmap
+### Étape 5 — Test manuel
+
+Avant de passer en Review, rédiger une liste de scénarios à tester manuellement :
+
+```markdown
+## Tests manuels
+
+1. [scénario — chemin heureux]
+2. [scénario — cas limite ou erreur attendue]
+3. [autre scénario pertinent]
+...
+
+Tester chaque point et indiquer : ✓ OK / ✗ KO [description du problème].
+```
+
+Attendre le retour de l'humain. Pour chaque point KO :
+- Corriger et relancer uniquement les tests affectés.
+- Répéter jusqu'à ce que tous les points soient OK.
+
+Ne pas passer à la Review tant qu'un test est KO.
+
+### Étape 6 — Mise à jour roadmap
 
 Passer la phase de `Implémentation` à `Review` dans `roadmap.md`.
 

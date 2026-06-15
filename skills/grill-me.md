@@ -2,7 +2,7 @@
 
 ## Déclencheur
 
-Avant `skills/phase-exploration.md` pour toute tâche en phase Exploration.
+Avant `skills/phase-analyse.md` pour toute tâche en phase Analyse.
 
 Également sur demande explicite de l'humain : "grill me", "grill-me", "interview me", "pressure-test", "aide-moi à clarifier", ou demande vague qui ressemble plus à une décision qu'à une tâche directement exécutable.
 
@@ -30,6 +30,10 @@ Pour chaque question :
 - approfondir la réponse reçue avant de changer de branche ;
 - si la réponse est vague, proposer une hypothèse falsifiable plutôt que d'accepter le flou ;
 - relever poliment les contradictions, arbitrages implicites et zones de non-décision.
+
+**Claude Code** : utiliser l'outil `AskUserQuestion` pour chaque question. Formuler 2 à 4 options concrètes que l'humain peut sélectionner ou corriger via "Other". Chaque option doit avoir un `label` court et une `description` qui explicite le trade-off ou l'implication. Utiliser `multiSelect: true` si les choix ne sont pas mutuellement exclusifs.
+
+**Codex** : poser les questions en texte, une à la fois, avec une recommandation ou un strawman inline.
 
 Si une question peut être résolue en explorant la codebase, explorer plutôt que demander. Logger chaque lecture significative dans le `Context usage log` du session-state.
 
@@ -73,4 +77,4 @@ Produire un handoff court dans la conversation, structuré ainsi :
 **Prochaine action recommandée** : [phase ou action suivante]
 ```
 
-Ce handoff est le matériau d'entrée de `skills/phase-exploration.md` quand la tâche suit le pipeline standard.
+Ce handoff est le matériau d'entrée de `skills/phase-analyse.md` quand la tâche suit le pipeline standard.

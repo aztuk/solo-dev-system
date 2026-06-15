@@ -109,9 +109,12 @@ Soumettre le plan à l'humain. Attendre approbation explicite. Ne pas implément
 
 Après validation : passer la phase de `Analyse` à `Implémentation` dans `roadmap.md`. Renseigner le dossier artefacts si absent.
 
+Ne pas exécuter `skills/phase-implementation.md` dans le même tour. La validation du plan ne vaut pas ordre d'implémenter.
+
 Afficher :
 ```
 Analyse terminée.
 Artefacts : tasks/<slug>/exploration.md, tasks/<slug>/plan.md
 Prochaine phase : Implémentation
+En attente d'une demande explicite pour démarrer l'Implémentation.
 ```

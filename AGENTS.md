@@ -98,6 +98,19 @@ Exécuter `skills/session-start.md`. Pour la prochaine tâche : `skills/next-tas
 
 Pipeline : `Analyse→Impl→Review`.
 
+### Barrière de transition entre phases
+
+Une validation humaine de phase clôture uniquement la phase courante.
+
+Les réponses comme "ok", "c'est bon", "validé", "je valide", ou équivalent, après une Analyse :
+- autorisent la mise à jour de la tâche vers la phase Implémentation ;
+- n'autorisent pas l'exécution de l'Implémentation.
+
+Pour démarrer l'Implémentation, l'humain doit formuler une demande explicite séparée, par exemple :
+"passe en implémentation", "implémente", "lance la phase implémentation".
+
+Après chaque changement de phase, l'agent s'arrête et rend la main.
+
 | Phase | Skill à exécuter |
 |---|---|
 | Analyse | `skills/grill-me.md`, puis `skills/phase-analyse.md` |

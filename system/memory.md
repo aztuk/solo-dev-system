@@ -29,6 +29,14 @@ Format d'une entrée :
 
 ## Log
 
+## 2026-06-16 - Skill de creation de systemes de particules
+
+**Contexte** : T-012 demandait un skill AgenticSystem pour guider la creation d'effets de particules Phaser, avec un routage explicite depuis les demandes utilisateur comme "cree un nouveau systeme de particule pour xxx".
+**Decision** : creer `skills/create-particle-system.md` comme skill autonome config-first et ajouter dans `AGENTS.md` un routing par demande utilisateur vers ce skill.
+**Alternatives ecartees** : mettre les instructions directement dans `AGENTS.md`, ecarte pour garder l'orchestrateur lisible ; faire appeler d'autres skills depuis le nouveau skill, ecarte pour respecter la regle d'imbrication.
+**Impact** : `AgenticSystem/skills/create-particle-system.md`, `AgenticSystem/AGENTS.md`, `AgenticSystem/system/memory.md`.
+**Decide par** : Humain, avec execution Codex.
+
 ## 2026-06-07 — Grill-me avant Exploration
 
 **Contexte** : l'humain a testé la phase Exploration sur un autre projet et l'a trouvée trop checklistée ; il veut intégrer un vrai comportement `grill-me.md`, connu dans l'écosystème des agent skills, puis propager le système vers `SpaceExploration`.

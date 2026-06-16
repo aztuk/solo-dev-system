@@ -54,6 +54,7 @@ ls -t system/.session-state/*.md | head -1
 | `skills/figma-sync.md` | Mise à jour Figma tokens/composants |
 | `skills/update-system.md` | Décision à impact long terme |
 | `skills/create-skill.md` | Nouveau skill décidé par l'humain |
+| `skills/create-particle-system.md` | Demande de creation ou modification d'effet/systeme de particules Phaser |
 | `skills/create-project.md` | Nouveau repo projet |
 
 Routing modèle et spawning : `system/agent-patterns.md`.
@@ -73,6 +74,16 @@ Action           : bloqué — attente de validation humaine
 ## Demandes hors roadmap
 
 Les nouvelles tâches entrent via `skills/sync-todo.md` (depuis `TODO.md`), jamais directement dans `roadmap.md`.
+
+### Routing par demande utilisateur
+
+Avant de classer une demande comme hors roadmap, verifier si elle correspond a un skill metier deja disponible.
+
+| Demande utilisateur | Skill a executer |
+|---|---|
+| Creer, ajouter ou configurer un effet/systeme de particules Phaser, par exemple "cree un nouveau systeme de particule pour xxx" | `skills/create-particle-system.md` |
+
+Ce routing ne change pas la hierarchie : AGENTS.md orchestre le skill, et le skill ne delegue jamais a un autre skill.
 
 Si la tâche n'existe pas dans `roadmap.md` :
 

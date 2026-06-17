@@ -29,6 +29,22 @@ Format d'une entrée :
 
 ## Log
 
+## 2026-06-17 — Vitest v4 : bug multi-fichiers résolu par singleFork
+
+**Contexte** : en passant à 2 fichiers de test (`ObjectPool.test.js` + `ParticleSystem.test.js`), Vitest v4.1.9 échouait avec `Cannot read properties of undefined (reading 'config')` au lancement des deux suites simultanément. Chaque fichier passait seul.
+**Décision** : créer `vite.config.js` avec `test.pool = "forks"` et `forks.singleFork = true` pour forcer l'exécution séquentielle dans un même processus.
+**Alternatives écartées** : `pool: "threads"` (même problème) ; ignorer le bug (masque les régressions futures).
+**Impact** : `vite.config.js` (nouveau). À surveiller si Vitest sort un correctif dans une prochaine version.
+**Décidé par** : Agent, avec validation humaine.
+
+## 2026-06-17 — gameConfig inliné dans main.js pour casser la dépendance circulaire
+
+**Contexte** : T-020 déplaçait `gameConfig` dans `src/config/game.config.js`, qui importait `PlayScene`. Or `PlayScene` importe `game.config.js` → dépendance circulaire → `GAME_COLORS` non initialisé au moment de l'import.
+**Décision** : `game.config.js` n'exporte que `GAME_COLORS`. `gameConfig` est inliné dans `main.js`, qui est le seul consommateur et le point d'entrée naturel pour la config Phaser.
+**Alternatives écartées** : fichier séparé `phaser.config.js` (inutile pour un seul usage) ; re-export depuis un index (ajoute de l'indirection sans bénéfice).
+**Impact** : `src/config/game.config.js`, `src/main.js`. Règle à retenir : tout fichier de config qui importe une entité Phaser crée un risque de cycle — préférer l'injection au point d'entrée.
+**Décidé par** : Agent, avec validation humaine.
+
 ## 2026-06-16 - Skill de creation de systemes de particules
 
 **Contexte** : T-012 demandait un skill AgenticSystem pour guider la creation d'effets de particules Phaser, avec un routage explicite depuis les demandes utilisateur comme "cree un nouveau systeme de particule pour xxx".
@@ -36,6 +52,30 @@ Format d'une entrée :
 **Alternatives ecartees** : mettre les instructions directement dans `AGENTS.md`, ecarte pour garder l'orchestrateur lisible ; faire appeler d'autres skills depuis le nouveau skill, ecarte pour respecter la regle d'imbrication.
 **Impact** : `AgenticSystem/skills/create-particle-system.md`, `AgenticSystem/AGENTS.md`, `AgenticSystem/system/memory.md`.
 **Decide par** : Humain, avec execution Codex.
+
+## 2026-06-16 — Bridge tokens JS → CSS via variables CSS custom properties
+
+**Contexte** : le HUD HTML utilise `color: #000000` hardcodé, alors que `GAME_COLORS.ink` existe dans `config.js`. Le CSS ne peut pas importer du JS directement.
+**Décision** : ajouter `inkCss` dans `GAME_COLORS` et l'injecter via `document.documentElement.style.setProperty("--color-ink", ...)` au `create()` de PlayScene. Le CSS référence `var(--color-ink)`.
+**Alternatives écartées** : style inline sur l'élément HUD (moins maintenable) ; dupliquer la valeur sans lien (violation de la règle tokens).
+**Impact** : `src/game/config.js`, `src/styles.css`, `src/scenes/PlayScene.js`. Pattern à reproduire pour tout futur élément HTML qui doit référencer une couleur du jeu.
+**Décidé par** : Agent, avec validation humaine.
+
+## 2026-06-16 — Framework de tests unitaires
+
+**Contexte** : l'humain a demande d'ajouter un framework de test et de consigner la convention dans governance.
+**Decision** : utiliser Vitest comme framework de tests unitaires, avec `npm test` pour la commande non interactive et des fichiers `*.test.js` co-localises avec le code source.
+**Alternatives ecartees** : Jest, ecarte car Vitest s'integre plus directement a Vite et aux modules ES du projet.
+**Impact** : `package.json`, `package-lock.json`, `src/pools/ObjectPool.test.js`, `system/governance.md`, `system/memory.md`.
+**Decide par** : Humain, avec execution Codex.
+
+## 2026-06-16 — Séparation EnemySpawner / EnemySystem
+
+**Contexte** : T-005 demandait un spawner générique réutilisable pour tous les types d'ennemis futurs. L'ancien EnemySystem gérait pool + spawn + logique métier dans un seul fichier.
+**Décision** : séparer en deux responsabilités — `EnemySpawner` (lifecycle : pool ObjectPool + timer Phaser + position de spawn) et `EnemySystem` (logique métier : update, draw, damage). PlayScene orchestre les deux.
+**Alternatives écartées** : garder EnemySystem monolithique avec un paramètre config, rejeté car le timer et la position de spawn appartiennent au cycle de vie, pas à la logique métier ; faire gérer le timer par PlayScene, rejeté car chaque type d'ennemi aurait un timer différent.
+**Impact** : `src/spawner/EnemySpawner.js` (nouveau), `src/enemies/pointNoir.config.js` (pattern config par ennemi), `src/systems/EnemySystem.js` (refactorisé), `src/scenes/PlayScene.js`. Pattern à reproduire pour T-013 (skill création ennemi).
+**Décidé par** : Agent, avec validation humaine.
 
 ## 2026-06-07 — Grill-me avant Exploration
 

@@ -30,3 +30,6 @@ yarn-error.log*
 
 # Runtime session state (per-session, ephemeral)
 system/.session-state/
+
+# Project-specific skills (not part of the shared system)
+skills/create-enemy.md

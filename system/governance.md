@@ -8,8 +8,18 @@ Ce fichier définit les règles non-négociables du projet. Tout agent doit le c
 
 | Couche | Technologie | Raison |
 |---|---|---|
+| Moteur jeu | Phaser | Framework 2D principal du prototype incremental shooter. |
+| Build / dev | Vite | Bundler ESM rapide, deja utilise par le projet. |
+| Tests unitaires | Vitest | Compatible avec Vite et les modules ES du projet. |
 
-*À renseigner lors de la phase de setup du projet.*
+---
+
+## Regles de tests
+
+- Le framework de tests unitaires est Vitest.
+- La commande de test non interactive est `npm test`.
+- Les fichiers de test sont co-localises avec le code source sous la forme `NomFichier.test.js`.
+- Les tests unitaires ne doivent pas lancer de serveur de developpement, de navigateur, ni de verification visuelle.
 
 ---
 

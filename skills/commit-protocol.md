@@ -75,6 +75,8 @@ Si la session est liée à une tâche avec artefacts dans `tasks/<slug>/` :
 
 Si la session était une exception urgente hors roadmap : ajouter la tâche dans `roadmap.md` avec phase `fait`, sauf dispense explicite de l'humain.
 
+Après toute mise à jour de phase vers `fait` : déplacer la ligne de la section `## En cours` vers la section `## Fait` (format réduit : ID | Tâche | Dossier, sans Pipeline/Modèle/Priorité).
+
 ---
 
 ### Étape 6 — Handoff synchronisation TODO → roadmap.md

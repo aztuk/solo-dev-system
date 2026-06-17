@@ -55,6 +55,7 @@ ls -t system/.session-state/*.md | head -1
 | `skills/update-system.md` | Décision à impact long terme |
 | `skills/create-skill.md` | Nouveau skill décidé par l'humain |
 | `skills/create-particle-system.md` | Demande de creation ou modification d'effet/systeme de particules Phaser |
+| `skills/create-enemy.md` | Demande de creation, ajout ou configuration d'un type d'ennemi Phaser |
 | `skills/create-project.md` | Nouveau repo projet |
 
 Routing modèle et spawning : `system/agent-patterns.md`.
@@ -82,6 +83,7 @@ Avant de classer une demande comme hors roadmap, verifier si elle correspond a u
 | Demande utilisateur | Skill a executer |
 |---|---|
 | Creer, ajouter ou configurer un effet/systeme de particules Phaser, par exemple "cree un nouveau systeme de particule pour xxx" | `skills/create-particle-system.md` |
+| Creer, ajouter ou configurer un type d'ennemi Phaser, ses proprietes ou son spawn, par exemple "cree un ennemi rapide" | `skills/create-enemy.md` |
 
 Ce routing ne change pas la hierarchie : AGENTS.md orchestre le skill, et le skill ne delegue jamais a un autre skill.
 

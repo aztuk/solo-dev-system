@@ -13,6 +13,14 @@ Ce fichier est alimenté à deux moments précis :
 
 **2. En fin de session** — par l'agent en cours, dans la phase de clôture du protocole AGENTS.md. Si des choix significatifs ont été faits pendant la session sans avoir déclenché `update-system.md`, l'agent les consigne ici avant le commit Git.
 
+## 2026-06-19 — Pierce sniper data-driven via pierceCount d'instance
+
+**Contexte** : T-054 demandait le projectile perforant (pierce) du sniper. L'humain s'est interrogé sur la scalabilité : faudrait-il recoder pour ajouter le pierce à un autre canon ou à un futur système global ("trésor : tous vos projectiles percent +1") ?
+**Décision** : `pierceCount` est un champ d'instance sur `Cannon`/`SecondaryCannon` (défaut `0`, comme `damageBonus`/`fireRateMultiplier`), lu génériquement par `ProjectileCollisionSystem`. Le `statPool` de `cannonTypes.config.js` ne fait que déclarer quelles cartes de draft sont proposées par type (avec gating `minRarity`) — il n'active pas la mécanique. Un système global pourrait incrémenter `pierceCount` sur n'importe quel canon (via `applyStatBonus` ou en bouclant sur les instances) sans toucher au moteur de collision.
+**Alternatives écartées** : déclarer une valeur de base `pierceCount` par type dans `cannonTypes.config.js`, écarté car aucun canon n'a besoin aujourd'hui d'un défaut différent de 0 — introduirait une deuxième source de vérité sans bénéfice immédiat.
+**Impact** : `src/entities/Projectile.js`, `src/entities/Cannon.js`, `src/entities/SecondaryCannon.js`, `src/systems/CannonSystem.js`, `src/systems/ProjectileCollisionSystem.js`, `src/systems/CardDraftSystem.js` (helper `compareRarity` pour le gating `minRarity`), `src/scenes/PlaySceneDebugHotkeys.js` (nouveau, hotkeys debug extraites de `PlayScene.js` pour respecter le seuil de 250 lignes).
+**Décidé par** : Humain (choix de conserver le pattern existant), avec exécution Claude Code.
+
 Format d'une entrée :
 
 ```
@@ -28,6 +36,38 @@ Format d'une entrée :
 ---
 
 ## Log
+
+## 2026-06-19 — Interdiction des tests visuels renforcee dans instructions et skills
+
+**Contexte** : l'humain a rappele explicitement "PAS DE VERIFICATION VISUEL" apres une tentative de verification par serveur local/capture. Les garde-fous existaient deja dans plusieurs fichiers mais n'etaient pas assez centraux ni assez explicites contre les fallbacks headless/CLI/browser.
+**Decision** : rendre l'interdiction prioritaire et non negociable dans `CLAUDE.md`, `AGENTS.md`, `system/governance.md`, `session-start.md` et les skills de debug, implementation, review, tests, compliance, Figma et creation de contenu. Les validations visuelles doivent toujours etre listees comme tests manuels humains.
+**Alternatives ecartees** : conserver uniquement la regle existante dans governance/AGENTS, ecarte car elle n'a pas empeche un fallback visuel ; autoriser des checks headless "non visuels", ecarte car ils contournent l'intention humaine.
+**Impact** : interdiction explicite des serveurs dev/preview/local, navigateurs, outils browser, Playwright/Cypress/Puppeteer/agent-browser, screenshots, captures Figma, E2E et smoke tests navigateur pour tout agent du projet.
+**Decide par** : Humain, avec execution Codex.
+
+## 2026-06-19 — T-053 : position de tour propre au type (pas au slot), type du canon principal exclu du déblocage secondaire
+
+**Contexte** : exploration.md de T-053 affirmait que `CANNON_TYPES["auto-turret"]` existait déjà ; vérification de tout l'historique git du fichier (4 commits) a montré qu'il n'a jamais contenu que `"sniper"` — l'exploration était inexacte. Par ailleurs, `CANNON_SLOTS` fixait une position (`offsetX`/`offsetY`) par index de slot plutôt que par type : une tour donnée changeait de position selon l'ordre de déblocage. L'humain a aussi précisé en cours d'implémentation que le type choisi en canon principal ne doit jamais réapparaître comme choix de déblocage secondaire, et que certaines tours (sniper) veulent une position absolue depuis le haut de l'écran plutôt que relative au centre.
+**Décision** : `auto-turret` recréé via le protocole `create-cannon.md` (valeurs reprises du hardcodé existant, `statPool` à `null` partout — exclu du tirage de cartes tant que l'humain n'a pas fourni de vraies valeurs). Position déplacée de `CANNON_SLOTS` (par slot) vers `CANNON_TYPES` (`offsetX`/`offsetY` relatifs à l'ancre de formation `marginLeft`/hauteur-écran/2, ou `absoluteY` optionnel pour une position fixe depuis le haut). `CannonSystem.getLockedTypeIds()` exclut désormais `this.basicCannon.type.id` du pool de déblocage. Choix du canon de départ persisté en `localStorage` via `CannonSelectionSystem` (nouveau), écran intégré à `#start-screen`.
+**Alternatives écartées** : conserver des positions par slot (rejeté par l'humain — la position doit être une propriété intrinsèque de la tour, pas de son ordre de déblocage) ; laisser `auto-turret` avec des valeurs de stats inventées (rejeté — `create-cannon.md` impose `TODO_BALANCE`/placeholders explicites en l'absence de valeurs humaines, donc `null` partout pour exclure ces cartes du tirage plutôt que risquer un bonus `NaN`).
+**Impact** : `src/config/cannonTypes.config.js`, `src/config/cannonSlots.config.js` (devient un simple compteur `CANNON_SLOT_COUNT`), `src/config/cannon.config.js`, `src/entities/Cannon.js` (+`reposition()`, +`offsetX/offsetY/absoluteY`), `src/entities/SecondaryCannon.js`, `src/systems/CannonSystem.js`, `src/systems/CannonSelectionSystem.js` (nouveau), `src/scenes/PlayScene.js`, `index.html`, `src/styles.css`. À surveiller : T-055 (canon principal toujours absent des cartes d'amélioration de level-up, limitation distincte non traitée ici) ; T-056 propose d'harmoniser l'archi config canons sur celle des ennemis (un fichier par type).
+**Décidé par** : Humain (clarifications ciblées sur l'écart exploration/code, l'exclusion de déblocage, et le positionnement par type), avec exécution Agent.
+
+## 2026-06-19 — T-046 : EnemySpawner généralisé à un pool+timer par type, spawn rate en unité humaine
+
+**Contexte** : `create-enemy.md` n'imposait pas d'artefact d'exploration ni de validation humaine avant code, ce qui a fait sauter l'audit complet à la 1ère tentative. En creusant l'implémentation du Sprinter (1er ennemi avec un comportement custom), découverte que `EnemySpawner` n'avait qu'un seul `ObjectPool` codé en dur sur `Enemy` — un type avec une classe dédiée n'était donc jamais réellement instancié. Question annexe de l'humain sur le malus "spawnrate" a aussi révélé qu'un poids relatif (`spawnWeight`) entre types était illisible (effet en % dépendant du nombre de types actifs).
+**Décision** : `create-enemy.md` impose maintenant un `exploration.md` complet (matrice + qualification + sources) validé par l'humain avant tout code. `EnemySpawner` a un `ObjectPool` et un timer Phaser indépendants par type (factory = `config.create`), plus de tirage pondéré partagé. Chaque type déclare `spawnPer5Sec` ("X toutes les 5 secondes", unité humaine) au lieu d'un poids relatif ; les cartes de level-up modifient cette valeur en flat et reschedulent le timer du type immédiatement.
+**Alternatives écartées** : garder un seul pool et piloter le comportement custom via un branchement `if` dans `Enemy.update()` selon `config.movement` — écarté par l'humain au profit de la généralisation du spawner, jugée plus scalable pour les futurs ennemis à comportement distinct.
+**Impact** : `AgenticSystem/skills/create-enemy.md`, `src/spawner/EnemySpawner.js`, `src/systems/SpawnProgressionSystem.js`, `src/config/pointNoir.config.js` (+`spawnPer5Sec`/`spawnPer5SecMax`, `pointNoirConfig` supprimé), `src/config/enemyTypes.config.js` (nouveau registre central), `src/config/sprinterEnemy.config.js`, `src/entities/Sprinter.js`, `src/systems/EnemySystem.js` (+rendu triangle, configs propagées dans les callbacks mort/spawn/cannon-hit pour un camera-shake par type). roadmap.md/PlayScene.js non commités avec ce changement (édités en parallèle par un autre agent au moment de la session).
+**Décidé par** : Humain (choix architecture spawner + unité spawn rate via questions ciblées), avec exécution Agent.
+
+## 2026-06-19 — Bugs level-up : tirage sans doublon, hitbox calculée depuis radius, malus épique forcé sur unlock
+
+**Contexte** : 4 bugs roadmap (tirage CardDraftSystem pouvant proposer 2x la même carte, `hitboxRadius` stocké en dur et désynchronisable de `radius`/`displayRadius`, stats % affichées en décimal brut) + un 5e bug découvert pendant la vérification manuelle : choisir une carte "Nouveau canon" (kind `unlock`, sans `rarity`) forçait `showEnemyCards(undefined)`, donc un malus ennemi à rareté aléatoire au lieu d'épique.
+**Décision** : `CardDraftSystem.drawCards()` déduplique par clé `typeId:stat` (Set `usedKeys`), retourne moins de cartes si le pool est épuisé plutôt que des doublons. `Enemy.hitboxRadius`/`radius` deviennent des getters calculés (`displayRadius + config.hitboxMargin`) au lieu de propriétés assignées au constructeur/reset — la carte "Taille" du point noir cible maintenant `radius` (rétrécit aussi le visuel, pas seulement la hitbox invisible). `LevelUpHudSystem` formate les stats marquées `isPercent: true` en `+15%`. `PlayScene.showCannonCards` force `forcedRarity = "epic"` quand `card.kind === "unlock"` (au lieu de `card.rarity ?? null`).
+**Alternatives écartées** : hitbox strictement égale au radius affiché sans marge (annule l'intention T-037 de tolérance de collision) ; carte "Taille" gardée sur un champ hitbox séparé (laisse le malus invisible, écarté par l'humain).
+**Impact** : `src/systems/CardDraftSystem.js`, `src/systems/CardDraftSystem.test.js`, `src/entities/Enemy.js`, `src/config/pointNoir.config.js` (+`hitboxMargin`, stat renommé `radius`), `src/config/cannonTypes.config.js` (+`isPercent`), `src/systems/LevelUpHudSystem.js`, `src/scenes/PlayScene.js`. roadmap.md non touché dans ce commit (édité en parallèle par un autre agent au moment de la session).
+**Décidé par** : Humain (choix de formule hitbox + périmètre des bugs via questions ciblées), avec exécution Agent.
 
 ## 2026-06-18 — T-025 : rareté du malus toujours alignée au bonus choisi, pas tirée séparément
 

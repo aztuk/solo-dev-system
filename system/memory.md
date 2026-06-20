@@ -13,6 +13,14 @@ Ce fichier est alimenté à deux moments précis :
 
 **2. En fin de session** — par l'agent en cours, dans la phase de clôture du protocole AGENTS.md. Si des choix significatifs ont été faits pendant la session sans avoir déclenché `update-system.md`, l'agent les consigne ici avant le commit Git.
 
+## 2026-06-20 — T-074 découpée en 3 sous-tâches roadmap (cleanup / split UI-gameplay / harmonisation canon-ennemi)
+
+**Contexte** : T-074 demandait un ménage large des configs canon/projectile/enemy avec séparation gameplay/UI. L'exploration a montré un périmètre trop large pour une implémentation atomique : code mort isolé (`projectileTypes.config.js`, `spawnRateStat.config.js`), un split gameplay/UI à appliquer uniformément sur tous les fichiers de catalogue (cannonTypes + ennemis), et une harmonisation structurelle Canon-vs-Ennemi qui recoupe directement T-056 déjà en roadmap.
+**Décision** : garder T-074 comme la sous-tâche 1 (suppression du code mort, terminée et commitée), créer T-076 (split gameplay/UI par fichier `*.ui.js`/`*.config.js`) et T-077 (harmonisation structurelle, à coordonner avec T-056 plutôt que la dupliquer) comme nouvelles entrées roadmap directes, sur demande explicite de l'humain plutôt que via `sync-todo.md` (car décomposition d'une tâche déjà actée, pas une nouvelle demande hors roadmap).
+**Alternatives écartées** : tout livrer dans une seule implémentation T-074 (écarté — périmètre trop large, risque de fichier omnibus) ; tracer les sous-tâches uniquement dans `TODO.md` pour repasser par `sync-todo.md` (écarté par l'humain, qui a préféré l'ajout direct en roadmap).
+**Impact** : `roadmap.md` (T-074 déplacée en Fait, T-076/T-077 ajoutées en `à faire`), `tasks/t074-cleanup-configs/exploration.md` + `plan.md`, suppression de `src/config/projectileTypes.config.js` et `src/config/spawnRateStat.config.js` (fonction inlinée dans `pointNoir.config.js`/`sprinterEnemy.config.js`). À surveiller : T-077 ne doit pas dupliquer T-056 si celle-ci démarre avant.
+**Décidé par** : Humain (validation du plan + découpage), avec exécution Claude Code.
+
 ## 2026-06-19 — Pierce sniper data-driven via pierceCount d'instance
 
 **Contexte** : T-054 demandait le projectile perforant (pierce) du sniper. L'humain s'est interrogé sur la scalabilité : faudrait-il recoder pour ajouter le pierce à un autre canon ou à un futur système global ("trésor : tous vos projectiles percent +1") ?

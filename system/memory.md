@@ -13,6 +13,14 @@ Ce fichier est alimenté à deux moments précis :
 
 **2. En fin de session** — par l'agent en cours, dans la phase de clôture du protocole AGENTS.md. Si des choix significatifs ont été faits pendant la session sans avoir déclenché `update-system.md`, l'agent les consigne ici avant le commit Git.
 
+## 2026-06-21 — T-076 : pattern `*.ui.js` miroir par id pour séparer gameplay/UI
+
+**Contexte** : T-076 (sous-tâche de T-074) demandait d'extraire `label/description/color/outline/drawIcon/cameraShake` des catalogues `cannonTypes.config.js`/`pointNoir.config.js`/`sprinterEnemy.config.js` vers des fichiers UI dédiés, sans casser les ~10 consommateurs (HUD, sélection canon, level-up, EnemySystem/CannonSystem draw, PlayScene).
+**Décision** : un fichier `*.ui.js` par catalogue exportant une map indexée par `id` (`CANNON_TYPES_UI`, `ENEMY_TYPES_UI` via `pointNoir.ui.js`/`sprinterEnemy.ui.js`), miroir exact des maps gameplay (`CANNON_TYPE_MAP`/`ENEMY_TYPE_MAP`). Les consommateurs font un lookup `UI_MAP[entity.type.id]` au lieu d'accéder au champ directement sur l'objet gameplay. Quand une fonction recevait déjà la map gameplay en paramètre générique (`LevelUpHudSystem.showCannonCards/showEnemyCards`), un second paramètre `uiMap` a été ajouté plutôt que de fusionner les deux maps à l'exécution.
+**Alternatives écartées** : fusionner gameplay+UI dans un objet combiné au chargement (rejeté — réintroduit le couplage que la tâche visait à supprimer) ; stocker l'UI directement sur l'instance (`cannon.ui`) au lieu d'un lookup par id (rejeté — duplique la donnée par instance alors qu'elle est statique par type).
+**Impact** : `src/config/cannonTypes.ui.js`, `pointNoir.ui.js`, `sprinterEnemy.ui.js`, `enemyTypes.ui.js` (nouveaux) ; `cannonTypes.config.js`/`pointNoir.config.js`/`sprinterEnemy.config.js` allégés ; tous les consommateurs UI (`Cannon.js`, `SecondaryCannon.js`, `EnemySystem.js`, `CannonSystem.js`, `CannonSelectionSystem.js`, `CannonStatsHudSystem.js`, `EnemyStatsHudSystem.js`, `LevelUpHudSystem.js`, `LevelUpFlowSystem.js`, `PlayScene.js`) mis à jour vers le lookup par id. Pattern à réutiliser pour tout futur catalogue gameplay/UI séparé ; T-077 (harmonisation structurelle canon/ennemi) doit s'appuyer sur ce même pattern de maps miroir.
+**Décidé par** : Agent (implémentation), avec validation humaine sur les tests manuels et la review.
+
 ## 2026-06-20 — T-074 découpée en 3 sous-tâches roadmap (cleanup / split UI-gameplay / harmonisation canon-ennemi)
 
 **Contexte** : T-074 demandait un ménage large des configs canon/projectile/enemy avec séparation gameplay/UI. L'exploration a montré un périmètre trop large pour une implémentation atomique : code mort isolé (`projectileTypes.config.js`, `spawnRateStat.config.js`), un split gameplay/UI à appliquer uniformément sur tous les fichiers de catalogue (cannonTypes + ennemis), et une harmonisation structurelle Canon-vs-Ennemi qui recoupe directement T-056 déjà en roadmap.

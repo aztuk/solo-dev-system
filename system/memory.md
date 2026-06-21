@@ -13,6 +13,15 @@ Ce fichier est alimenté à deux moments précis :
 
 **2. En fin de session** — par l'agent en cours, dans la phase de clôture du protocole AGENTS.md. Si des choix significatifs ont été faits pendant la session sans avoir déclenché `update-system.md`, l'agent les consigne ici avant le commit Git.
 
+## 2026-06-21 — T-069 : src/config découpé en balance/ui/core × canons/ennemis/commun
+
+**Contexte** : T-069 demandait de rendre clair quels fichiers de `src/config/` (21 fichiers à plat) toucher pour l'équilibrage/contenu vs config rare/ponctuelle. L'humain a ensuite demandé une subdivision supplémentaire par entité (Canons/Ennemis) dans chaque sous-dossier.
+**Décision** : grille à deux axes — `balance/` (équilibrage/contenu) / `ui/` (présentation visuelle/sonore) / `core/` (structurel/registres) en premier niveau, puis `canons/` / `ennemis/` / `commun/` en second niveau dans chacun. `commun/` reçoit tout fichier utilisé par les deux entités ou par aucune (ex. `sound.config.js`, `rarity.config.js`, `projectile.config.js` car lu aussi par `EnemySystem` pour knockback/crit). Convention de nom retenue : dossiers en minuscule, cohérent avec `balance/ui/core`.
+**Alternatives écartées** : ranger les fichiers transverses directement à la racine de `balance/`/`ui/`/`core/` sans dossier `commun/` dédié (écarté par l'humain, qui a préféré un 3e sous-dossier explicite plutôt qu'un mélange racine/sous-dossiers).
+**Bug rencontré** : un script PowerShell de remplacement en masse (`Get-Content -Raw` + `Set-Content -Encoding utf8`) a ajouté un BOM et corrompu les caractères accentués (mojibake) dans 26 fichiers `src/` — l'encodage par défaut de PowerShell 5.1 sans BOM source se rabat sur la codepage ANSI système en lecture. Corrigé par revert + ré-application via `[System.IO.File]::ReadAllText/WriteAllText` avec `UTF8Encoding($false)` explicite. À réutiliser pour tout futur script de remplacement en masse sur ce repo (PowerShell 5.1, fichiers UTF-8 sans BOM).
+**Impact** : 21 fichiers `src/config/*` déplacés, 26 fichiers `src/` mis à jour (imports), `tasks/t069-config-folders/`. T-078 ajoutée en roadmap (split `cannon.config.js`/`projectile.config.js` gameplay vs VFX/layout, hors scope de cette tâche).
+**Décidé par** : Humain (classification canons/ennemis/commun + casse des dossiers, via question posée), avec exécution Claude Code.
+
 ## 2026-06-21 — T-076 : pattern `*.ui.js` miroir par id pour séparer gameplay/UI
 
 **Contexte** : T-076 (sous-tâche de T-074) demandait d'extraire `label/description/color/outline/drawIcon/cameraShake` des catalogues `cannonTypes.config.js`/`pointNoir.config.js`/`sprinterEnemy.config.js` vers des fichiers UI dédiés, sans casser les ~10 consommateurs (HUD, sélection canon, level-up, EnemySystem/CannonSystem draw, PlayScene).

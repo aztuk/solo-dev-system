@@ -13,6 +13,15 @@ Ce fichier est alimenté à deux moments précis :
 
 **2. En fin de session** — par l'agent en cours, dans la phase de clôture du protocole AGENTS.md. Si des choix significatifs ont été faits pendant la session sans avoir déclenché `update-system.md`, l'agent les consigne ici avant le commit Git.
 
+## 2026-06-22 — T-050 : premières entrées du component catalog (reverse depuis le code)
+
+**Contexte** : `design-system/component-catalog.md` était vide. T-050 demandait de le peupler en reverse-engineering le HUD, les overlays/pages-flow (DOM, pas scènes Phaser — il n'y en a qu'une) et les canons existants.
+**Décision** : 11 entrées créées, statut `draft`, source `code`, Node Figma `TBD` — chaque fiche pointe vers le système/fichier `.ui.js` source réel. Le lien Figma SVG → asset Phaser (futur skill évoqué par l'humain) est explicitement hors scope, à ajouter comme tâche roadmap séparée si confirmé.
+**Alternatives écartées** : inclure le skill de conversion SVG→Phaser dans T-050 (écarté par l'humain, complexité distincte) ; documenter les projectiles comme composants séparés (écarté, aucun fichier `.ui.js` visuel dédié aujourd'hui).
+**Trade-off noté** : le composant catalogué "Vagabond Cannon Icon" porte un nom en avance sur le code — l'id/label reste `auto-turret`/`"Auto-turret"` dans `cannonTypes.ui.js` et `autoTurretCannon.config.js`. L'humain a demandé ce nom dans le catalog sans renommer le code ; à synchroniser si le renommage du canon de base est confirmé plus tard (ne pas supposer que "vagabond" est l'id réel du canon — c'est par ailleurs l'id de l'ennemi de base depuis T-080).
+**Impact** : `design-system/component-catalog.md`, `design-system/components/*.md` (11 fichiers), `tasks/reverse-design-system-catalog/`.
+**Décidé par** : Humain (périmètre, statut, exclusion du skill SVG→Phaser, renommage catalog), avec exécution Claude Code.
+
 ## 2026-06-21 — T-069 : src/config découpé en balance/ui/core × canons/ennemis/commun
 
 **Contexte** : T-069 demandait de rendre clair quels fichiers de `src/config/` (21 fichiers à plat) toucher pour l'équilibrage/contenu vs config rare/ponctuelle. L'humain a ensuite demandé une subdivision supplémentaire par entité (Canons/Ennemis) dans chaque sous-dossier.

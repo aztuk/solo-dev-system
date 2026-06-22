@@ -13,6 +13,14 @@ Ce fichier est alimenté à deux moments précis :
 
 **2. En fin de session** — par l'agent en cours, dans la phase de clôture du protocole AGENTS.md. Si des choix significatifs ont été faits pendant la session sans avoir déclenché `update-system.md`, l'agent les consigne ici avant le commit Git.
 
+## 2026-06-22 — T-050 : correction du renommage "Vagabond Cannon Icon"
+
+**Contexte** : l'entrée précédente de ce journal (même date, "premières entrées du component catalog") notait un renommage du canon de base "Auto-Turret" en "Vagabond" demandé par l'humain. L'humain est revenu dessus immédiatement après : confusion, "Vagabond" est déjà l'id de l'ennemi de base (T-080), pas celui d'un canon.
+**Décision** : annuler le renommage — la fiche redevient `auto-turret-cannon-icon.md` / "Auto-Turret Cannon Icon", id/label code inchangés. Le trade-off documenté dans l'entrée précédente ne s'applique plus.
+**Ajout associé** : l'humain a signalé qu'il manquait aussi les assets visuels des ennemis au catalog (même périmètre que les canons). Ajout de `vagabond-enemy-icon.md` et `sprinter-enemy-icon.md`, sur le même pattern (`src/config/ui/ennemis/*.ui.js`), statut `draft`/`code`, Node Figma `TBD`.
+**Impact** : `design-system/component-catalog.md`, `design-system/components/auto-turret-cannon-icon.md` (restauré), `design-system/components/vagabond-enemy-icon.md` (nouveau), `design-system/components/sprinter-enemy-icon.md` (nouveau), `design-system/components/enemy-choice-screen.md` (référence mise à jour).
+**Décidé par** : Humain, avec exécution Claude Code.
+
 ## 2026-06-22 — T-050 : premières entrées du component catalog (reverse depuis le code)
 
 **Contexte** : `design-system/component-catalog.md` était vide. T-050 demandait de le peupler en reverse-engineering le HUD, les overlays/pages-flow (DOM, pas scènes Phaser — il n'y en a qu'une) et les canons existants.
